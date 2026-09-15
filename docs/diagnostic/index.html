@@ -95,12 +95,13 @@ var TESTS = [
     url:"https://rcf.digital/emissions-a-z?radio=34353&page=0&_format=json",
     check:function(j){ return Array.isArray(j) ? j.length + " fiches" : "réponse lue"; } },
 
-  { name:"Catalogue à la demande Radioplayer", kind:"json",
-    url:"https://core-search.radioplayer.cloud/056/qp/v4/od?rpId=1013",
-    check:function(j){ return j ? "réponse lue" : "vide"; } },
+  // Cette route répond en JSONP — « callback({…}) » — et non en JSON.
+  // Un JSON.parse direct échoue et ferait croire à tort à un refus CORS.
+  { name:"Catalogue à la demande Radioplayer (JSONP)", kind:"jsonp",
+    url:"https://core-search.radioplayer.cloud/056/qp/v4/od?rpId=1013" },
 
   { name:"Visuel d'émission (assets.radiorcf.com)", kind:"img",
-    url:"https://assets.radiorcf.com/styles/640x360/assets/2024-08/talent-belge-rcf-liege.png.webp" },
+    url:"https://assets.radiorcf.com/styles/304x171/assets/2024-08/talent-belge-rcf-liege.png.webp" },
 
   { name:"Visuel d'émission (media.rcf.fr)", kind:"img",
     url:"https://media.rcf.fr/sites/default/files/styles/304x171/public/2023-09/direction-sud-rcf-liege.png.webp" },
@@ -199,8 +200,32 @@ function testAudio(t, i){
   a.load();
 }
 
+// Réponse enveloppée dans « callback({…}) » : on lit le texte et on déballe.
+function testJsonp(t, i){
+  fetch(t.url, {mode:'cors'})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+    .then(function(txt){
+      var m = txt.match(/^[^(]*\(([\s\S]*)\)\s*;?\s*$/);
+      if(!m) throw new Error('enveloppe JSONP non reconnue');
+      var j = JSON.parse(m[1]);
+      set(i, 'b-ok', 'autorisé',
+        'Appelable depuis ce domaine, mais la réponse est en <b>JSONP</b>, pas en JSON : ' +
+        'il faut retirer l\'enveloppe <code>callback(…)</code> avant de lire. ' +
+        '<b>' + (j.total || '?') + ' épisodes annoncés</b>, ' +
+        ((j.results && j.results.length) || '?') + ' servis par page.');
+    })
+    .catch(function(err){
+      fetch(t.url, {mode:'no-cors'}).then(function(){
+        set(i, 'b-ko', 'CORS refusé', 'Le serveur répond, mais pas à ce domaine. <b>' + err.message + '</b>');
+      }).catch(function(){
+        set(i, 'b-warn', 'injoignable', '<b>' + err.message + '</b>');
+      });
+    });
+}
+
 TESTS.forEach(function(t, i){
   if(t.kind === 'json') testJson(t, i);
+  else if(t.kind === 'jsonp') testJsonp(t, i);
   else if(t.kind === 'img') testImg(t, i);
   else testAudio(t, i);
 });

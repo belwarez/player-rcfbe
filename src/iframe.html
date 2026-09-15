@@ -31,7 +31,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .head{
   background:var(--rcf);color:#fff;
   display:flex;flex-direction:column;align-items:center;
-  padding:18px 18px 28px;
+  padding:18px 20px 30px;
   border-radius:0 0 38px 38px;
   box-shadow:0 10px 26px rgba(226,0,26,.20);
   position:relative;z-index:2;
@@ -60,15 +60,29 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   animation:drop .2s ease-out both;
 }
 
+/* Le logo est détouré : blanc sur le rouge, sans cadre ni tuile. */
 .logo{
-  width:66px;height:66px;border-radius:17px;overflow:hidden;position:relative;
-  box-shadow:0 6px 18px rgba(0,0,0,.22);
-  outline:1px solid rgba(255,255,255,.22);outline-offset:-1px;
-  margin-bottom:16px;flex:0 0 auto;
-  display:grid;place-items:center;background:var(--rcf-dark);
+  width:150px;flex:0 0 auto;margin-bottom:18px;
+  display:flex;align-items:center;justify-content:center;
 }
-.logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.logo .fallback{font-family:var(--fd);font-weight:900;font-size:19px;letter-spacing:-.02em}
+.logo img,.logo svg{width:100%;height:auto;display:block}
+.logo svg{fill:#fff}
+.logo .fallback{font-family:var(--fd);font-weight:900;font-size:34px;letter-spacing:-.03em}
+
+/* La bannière de l'émission en cours, au format des visuels RCF. */
+.banner{
+  position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;
+  background:rgba(0,0,0,.16);flex:0 0 auto;margin-bottom:14px;
+  box-shadow:0 6px 20px rgba(0,0,0,.20);
+}
+.banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.banner .fallback{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-family:var(--fd);font-weight:800;font-size:15px;color:rgba(255,255,255,.55);
+  text-align:center;padding:12px;
+}
+.banner.vide{display:none}
+.head-right{flex:1;min-width:0;width:100%;display:flex;flex-direction:column;align-items:center}
 
 .pill{
   display:inline-flex;align-items:center;gap:8px;
@@ -133,15 +147,17 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   display:flex;gap:13px;overflow-x:auto;
   padding:4px 20px 6px;scroll-snap-type:x mandatory;
 }
+/* 16:9 — c'est le seul format que RCF produit : tous les visuels sont servis
+   en 304 × 171. Un cadre carré en recadrait près de la moitié. */
 .card{
-  flex:0 0 auto;width:128px;scroll-snap-align:center;
+  flex:0 0 auto;width:156px;scroll-snap-align:center;
   display:flex;flex-direction:column;
   transition:opacity .3s,filter .3s;
 }
 .card.past{opacity:.4;filter:grayscale(1)}
 .card.past:hover{opacity:.92;filter:grayscale(0)}
 .card-img{
-  position:relative;width:128px;height:128px;border-radius:16px;overflow:hidden;
+  position:relative;width:100%;aspect-ratio:16/9;border-radius:13px;overflow:hidden;
   background:linear-gradient(140deg,var(--rcf),var(--rcf-dark));
   display:grid;place-items:center;margin-bottom:9px;
   box-shadow:0 2px 8px rgba(0,0,0,.10);
@@ -151,7 +167,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 }
 .card-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .card-img .fallback{
-  font-family:var(--fd);font-weight:900;font-size:26px;color:rgba(255,255,255,.60);
+  font-family:var(--fd);font-weight:900;font-size:22px;color:rgba(255,255,255,.60);
   letter-spacing:-.03em;
 }
 .tag{
@@ -203,31 +219,27 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   display:flex;gap:11px;overflow-x:auto;padding:4px 15px 8px;
   scroll-snap-type:x mandatory;
 }
-.pod{flex:0 0 auto;width:calc(50% - 20px);min-width:132px;scroll-snap-align:start;cursor:pointer}
+.pod{flex:0 0 auto;width:156px;scroll-snap-align:start;cursor:pointer}
 .pod-img{
-  position:relative;width:100%;aspect-ratio:1;border-radius:16px;overflow:hidden;
+  position:relative;width:100%;aspect-ratio:16/9;border-radius:13px;overflow:hidden;
   background:linear-gradient(140deg,var(--rcf),var(--rcf-dark));
-  display:grid;place-items:center;
+  display:grid;place-items:center;padding:10px;
   box-shadow:0 2px 9px rgba(0,0,0,.11);
-  opacity:.6;transition:opacity .3s,box-shadow .3s,transform .3s;
+  opacity:.62;transition:opacity .3s,box-shadow .3s;
 }
 .pod.active .pod-img{opacity:1;box-shadow:0 5px 18px rgba(0,0,0,.17)}
 .pod-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.pod-img .fallback{
-  font-family:var(--fd);font-weight:900;font-size:30px;color:rgba(255,255,255,.55);
-  letter-spacing:-.03em;
-}
-.pod-veil{
-  position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(0,0,0,.68),rgba(0,0,0,.04) 55%,transparent);
-  display:flex;flex-direction:column;justify-content:flex-end;padding:11px 10px;
-}
+/* Pas de titre incrusté : les visuels RCF portent déjà le nom de l'émission.
+   Le titre n'apparaît qu'en secours, quand l'image ne se charge pas. */
 .pod-name{
-  font-family:var(--fd);font-weight:700;font-size:12.5px;line-height:1.18;color:#fff;
-  text-shadow:0 1px 4px rgba(0,0,0,.45);
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  font-family:var(--fd);font-weight:700;font-size:12px;line-height:1.2;color:#fff;
+  text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.35);
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
 }
-.pod-n{font-size:10px;color:rgba(255,255,255,.72);margin-top:3px;font-weight:600}
+.pod-meta{
+  font-size:10.5px;color:var(--muted);margin-top:6px;font-weight:600;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
 .dots{display:flex;justify-content:center;gap:5px;padding:2px 0 6px}
 .dots b{height:5px;border-radius:3px;background:#D8DAE0;transition:all .3s;cursor:pointer;display:block}
 
@@ -285,19 +297,23 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 
 /* ═══ 7. VARIANTE LARGE — widgets:["IF"] ══════════════════ */
 @media (min-width:620px){
-  .head{padding:12px 26px 16px;border-radius:0 0 30px 30px;align-items:stretch}
-  .head-main{flex-direction:row;align-items:center;gap:18px}
+  .head{padding:14px 28px 22px;border-radius:0 0 34px 34px;align-items:stretch}
+  .head-main{flex-direction:row;align-items:center;gap:22px}
   .stations{width:auto;max-width:none;margin:0 0 12px auto}
   .st{flex:0 0 auto;padding:6px 16px;font-size:11.5px}
   .st-hint{margin:-6px 0 12px auto;align-self:flex-end}
+  .logo{margin-bottom:0;width:158px}
+  .head-right{flex-direction:row;align-items:center;gap:20px}
+  .banner{width:210px;margin-bottom:0}
   .head-mid{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start}
-  .logo{margin-bottom:0;width:72px;height:72px}
-  .pill{margin-bottom:9px}
-  .h-title{text-align:left;font-size:22px;margin-bottom:3px}
-  .h-sub{text-align:left;margin-bottom:0}
+  .pill{margin-bottom:10px}
+  .h-title{text-align:left;font-size:25px;margin-bottom:4px}
+  .h-sub{text-align:left;margin-bottom:0;font-size:13.5px}
+  .big-play{width:70px;height:70px}
   .rail{padding-left:26px;padding-right:26px}
   .pods{padding-left:21px;padding-right:21px}
-  .pod{width:150px;min-width:150px}
+  .pod{width:200px}
+  .card{width:200px}
   .sec-head{padding:0 26px;margin-top:18px}
   .rule{margin-left:26px;margin-right:26px}
   .eps{margin-left:22px;margin-right:22px}
@@ -313,14 +329,17 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   <div class="st-hint" id="stHint" hidden></div>
   <div class="head-main">
     <div class="logo" id="logo"></div>
-    <div class="head-mid">
-      <div class="pill">
-        <span class="dot"></span>
-        <span class="pill-label" id="pillLabel">En direct</span>
-        <span class="eq"><i></i><i></i><i></i><i></i></span>
+    <div class="head-right">
+      <div class="banner" id="banner"></div>
+      <div class="head-mid">
+        <div class="pill">
+          <span class="dot"></span>
+          <span class="pill-label" id="pillLabel">En direct</span>
+          <span class="eq"><i></i><i></i><i></i><i></i></span>
+        </div>
+        <h1 class="h-title" id="hTitle">RCF Liège</h1>
+        <p class="h-sub" id="hSub"></p>
       </div>
-      <h1 class="h-title" id="hTitle">RCF Liège</h1>
-      <p class="h-sub" id="hSub"></p>
     </div>
     <button class="big-play" id="bigPlay" aria-label="Écouter le direct"></button>
   </div>
@@ -354,17 +373,24 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 
 <script id="rcf-data" type="application/json">/*__DATA__*/</script>
 <script id="rcf-logo" type="text/plain">/*__LOGO__*/</script>
+<script id="rcf-logo-generique" type="text/plain">/*__LOGO_SVG__*/</script>
 <script>
 (function(){
 "use strict";
 
 var D = JSON.parse(document.getElementById('rcf-data').textContent);
+// Deux logos : celui de RCF Liège (image détourée, blanc sur transparent) et le
+// lettrage RCF générique en vectoriel, qui sert aux stations sans logo propre.
 var LOGO = (document.getElementById('rcf-logo').textContent || '').trim();
+var LOGO_SVG = (document.getElementById('rcf-logo-generique').textContent || '').trim();
 var K = D.gridKeys, P = D.prefixes, RPID = D.station.rpId;
 
 /* ─── utilitaires ─────────────────────────────────────── */
 function expand(s){ if(!s) return ''; var i=s.indexOf('|'); return i<0?s:(P[s.slice(0,i)]||'')+s.slice(i+1); }
-function img(s){ return expand(s).replace('{style_name}','640x360'); }
+// 304x171 est le seul gabarit qu'assets.radiorcf.com serve réellement (vérifié
+// le 15/09/2026 : 640x360, 1000x1000, large, original renvoient tous une erreur ;
+// « medium » passe mais ne fait que 220x124).
+function img(s){ return expand(s).replace('{style_name}','304x171'); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){
   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 function mins(ms){ if(!ms) return ''; var s=Math.round(ms/1000);
@@ -380,6 +406,13 @@ function visual(src, title){
   var u = img(src);
   var f = '<span class="fallback">'+esc(mono(title))+'</span>';
   return u ? f+'<img src="'+esc(u)+'" alt="" loading="lazy" onerror="this.remove()">' : f;
+}
+// Variante des podcasts : en secours c'est le titre entier qui s'affiche,
+// pas un monogramme — puisque plus rien n'est écrit par-dessus la vignette.
+function visualTitre(src, title){
+  var u = img(src);
+  var f = '<span class="pod-name">'+esc(title)+'</span>';
+  return u ? f+'<img src="'+esc(u)+'" alt="'+esc(title)+'" loading="lazy" onerror="this.remove()">' : f;
 }
 function toMin(t){ var p=(t||'0:0').split(':'); return (+p[0])*60+(+p[1]); }
 function fmtDay(d){
@@ -401,6 +434,22 @@ var nowAbs = new Date().getHours()*60 + new Date().getMinutes();
 var curIdx = 0;
 for(var i=0;i<rows.length;i++){ if(rows[i].abs<=nowAbs) curIdx=i; }
 
+/* ─── tri des podcasts ────────────────────────────────── */
+// Du plus récent au plus ancien : la date de diffusion d'abord ; à date égale,
+// l'identifiant d'épisode, qui croît avec la publication — le dernier publié
+// d'une même journée passe donc devant. C'est ce qui départage les rendez-vous
+// quotidiens comme Le flash belge, qui produisent plusieurs épisodes par jour.
+function plusRecent(a, b){
+  if(a.day !== b.day) return a.day < b.day ? 1 : -1;
+  return (+b.id || 0) - (+a.id || 0);
+}
+(D.series || []).forEach(function(s){ s.eps.sort(plusRecent); });
+D.series = (D.series || []).slice().sort(function(x, y){
+  var a = x.eps[0], b = y.eps[0];
+  if(!a || !b) return a ? -1 : (b ? 1 : 0);
+  return plusRecent(a, b);
+});
+
 /* ─── état ────────────────────────────────────────────── */
 var playingLive=false, playingEp=null, podIdx=0, openPod=null, podTimer=null;
 
@@ -413,12 +462,28 @@ function send(type, extra){
 function log(label, payload){
   try{ parent.postMessage({type:'__DebugLog', label:label, payload:payload}, '*'); }catch(e){}
 }
+// Les types sont des chaînes en minuscules — « play », « requestplay » — et non
+// les noms d'interfaces de la documentation (PlayMessage, RequestPlayMessage).
+// Vérifié dans le guide d'intégration, section « Using iframe messaging ».
 window.addEventListener('message', function(e){
   var m=e.data; if(!m||typeof m!=='object'||!m.type) return;
-  if(m.type==='PlayMessage'){ playingLive=true; paintHead(); }
-  if(m.type==='PauseMessage'){ playingLive=false; playingEp=null; paintHead(); paintRail(); paintPods(); }
-  if(m.type==='NowPlayingMessage' && m.title){
-    el('hSub').textContent = m.title + (m.artist ? ' — '+m.artist : '');
+  switch(m.type){
+    case 'play':  playingLive=true;  paintHead(); break;
+    case 'pause': playingLive=false; playingEp=null; paintHead(); paintRail(); paintPods(); break;
+    case 'time':
+      // payload : PlaybackStatus { paused, live, time, volume, … }
+      if(m.payload && typeof m.payload.paused === 'boolean' && m.payload.paused === playingLive){
+        playingLive = !m.payload.paused; paintHead();
+      }
+      break;
+    case 'nowplaying':
+      // payload.now : SongEvent | ProgrammeEvent | StationEvent
+      var n = m.payload && m.payload.now; if(!n) break;
+      var texte = n.name
+        ? n.name + (n.artistName ? ' — ' + n.artistName : '')
+        : (n.programmeName || n.serviceName || '');
+      if(texte) el('hSub').textContent = texte;
+      break;
   }
 });
 
@@ -431,9 +496,14 @@ var PLAY_S ='<svg width="10" height="10" viewBox="0 0 18 18" fill="#fff" style="
 var PAUSE_S='<svg width="10" height="10" viewBox="0 0 18 18" fill="#fff"><rect x="3.2" y="2.2" width="4.2" height="13.6" rx="1.5"/><rect x="10.6" y="2.2" width="4.2" height="13.6" rx="1.5"/></svg>';
 
 /* ─── en-tête ─────────────────────────────────────────── */
-el('logo').innerHTML = LOGO
-  ? '<img src="'+LOGO+'" alt="RCF Liège" onerror="this.remove()"><span class="fallback">RCF</span>'
-  : '<span class="fallback">RCF</span>';
+function paintLogo(){
+  var active = (D.stations||[]).filter(function(s){ return s.actuelle; })[0];
+  // Seule RCF Liège a son logo propre ici ; les autres reçoivent le lettrage
+  // RCF générique, en vectoriel, qui reste juste à toutes les tailles.
+  el('logo').innerHTML = (active && active.id === 'liege' && LOGO)
+    ? '<img src="'+LOGO+'" alt="'+esc(active.nom)+'">'
+    : (LOGO_SVG || '<span class="fallback">RCF</span>');
+}
 
 /* ─── sélecteur de stations ───────────────────────────── */
 // Radioplayer change de station en chargeant la console de l'autre station.
@@ -468,6 +538,14 @@ function switchStation(s){
 
 function paintHead(){
   var r = rows[curIdx];
+  // La bannière de l'émission en cours, au même format 16:9 que tout le reste.
+  var u = img(r.img);
+  var b = el('banner');
+  b.classList.toggle('vide', !u && !(r.show || r.ep));
+  b.innerHTML = u
+    ? '<span class="fallback">'+esc(r.show || r.ep)+'</span>'+
+      '<img src="'+esc(u)+'" alt="" onerror="this.remove()">'
+    : '<span class="fallback">'+esc(r.show || r.ep || D.station.nom)+'</span>';
   el('hTitle').textContent = r.show || r.ep || D.station.nom;
   el('hSub').textContent   = (r.ep && r.ep !== r.show) ? r.ep : (r.pres || D.station.nom);
   el('pillLabel').textContent = 'En direct · ' + r.t;
@@ -476,8 +554,8 @@ function paintHead(){
   el('head').classList.toggle('on', playingLive);
 }
 el('bigPlay').addEventListener('click', function(){
-  if(playingLive){ send('RequestPause'); }
-  else { send('RequestSkipToLive'); send('RequestPlay'); }
+  if(playingLive){ send('requestpause'); }
+  else { send('requestskiptolive'); send('requestplay'); }
 });
 
 /* ─── carrousel programme ─────────────────────────────── */
@@ -515,10 +593,9 @@ function paintRail(){
 function paintPods(){
   el('pods').innerHTML = D.series.map(function(s, i){
     return '<div class="pod'+(i===podIdx?' active':'')+'" data-pod="'+i+'">'+
-      '<div class="pod-img">'+visual(s.img, s.t)+
-        '<div class="pod-veil"><span class="pod-name">'+esc(s.t)+'</span>'+
-        '<span class="pod-n">'+s.eps.length+' épisode'+(s.eps.length>1?'s':'')+'</span></div>'+
-      '</div></div>';
+      '<div class="pod-img">'+visualTitre(s.img, s.t)+'</div>'+
+      '<div class="pod-meta">'+s.eps.length+' épisode'+(s.eps.length>1?'s':'')+'</div>'+
+    '</div>';
   }).join('');
   el('dots').innerHTML = D.series.map(function(_, i){
     return '<b data-dot="'+i+'" style="width:'+(i===podIdx?15:5)+'px;background:'+
@@ -551,7 +628,7 @@ function centerPod(i){
 // Aucun message postMessage ne permet de charger un épisode :
 // la console doit être rechargée avec ?rpOdId=…
 function playEpisode(id){
-  if(playingEp === id){ send('RequestPause'); playingEp = null; }
+  if(playingEp === id){ send('requestpause'); playingEp = null; }
   else {
     playingEp = id; playingLive = false;
     var url = '?rpOdId='+encodeURIComponent(id)+'&rpSt='+RPID+'&rpSrp=index';
@@ -594,7 +671,7 @@ el('footCount').textContent = rows.filter(function(r){return r.state==='ecoutabl
 el('footDate').textContent  = D.jour + ' ' + fmtDay(D.date);
 el('secDay').textContent    = 'Aujourd’hui';
 
-paintStations(); paintHead(); paintRail(); paintPods();
+paintLogo(); paintStations(); paintHead(); paintRail(); paintPods();
 
 // Le créneau en cours est amené au centre ; le passé reste accessible à gauche.
 requestAnimationFrame(function(){

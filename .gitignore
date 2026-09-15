@@ -1,0 +1,18 @@
+# Windows et macOS déposent ces fichiers tout seuls dans les dossiers.
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+*~
+
+# Si des dépendances arrivent un jour
+node_modules/
+
+# ATTENTION : docs/ n'est PAS ignoré, et c'est voulu.
+# C'est le dossier que GitHub Pages publie — il doit être versionné.
+# Il est fabriqué par « node build.js » : toute modification faite à la main
+# dedans sera écrasée à la prochaine fabrication. Les sources sont dans src/.

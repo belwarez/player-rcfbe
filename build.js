@@ -23,12 +23,16 @@ console.log('Fabrication de docs/ — c est ce dossier que GitHub Pages publie.'
 
 /* ── 1. L'iframe, données et logo inlinés ─────────────────────────────── */
 const data = read(path.join(src, 'data-rcf-liege.json')).trim();
-const logo = fs.existsSync(path.join(src, 'logo-b64.txt'))
-  ? read(path.join(src, 'logo-b64.txt')).trim() : '';
+const logo = fs.existsSync(path.join(src, 'logo-liege.txt'))
+  ? read(path.join(src, 'logo-liege.txt')).trim() : '';
+
+const logoSvg = fs.existsSync(path.join(src, 'logo-rcf.svg'))
+  ? read(path.join(src, 'logo-rcf.svg')).trim() : '';
 
 const iframeHtml = read(path.join(src, 'iframe.html'))
   .replace('/*__DATA__*/', data)
-  .replace('/*__LOGO__*/', logo);
+  .replace('/*__LOGO__*/', logo)
+  .replace('/*__LOGO_SVG__*/', logoSvg);
 
 write(path.join(dist, 'iframe', 'index.html'), iframeHtml);
 
@@ -115,7 +119,7 @@ iframe{border:1px solid var(--line);border-radius:8px;background:#fff;display:bl
         <h2>Ce que le banc vérifie</h2>
         <ul>
           <li><b>La géométrie.</b> 300 × 507 est la fente mesurée sur la console 1RCF en production ; elle ne bouge pas avec la fenêtre. La page défile à l'intérieur.</li>
-          <li><b>Le protocole.</b> <code>RequestPlay</code>, <code>RequestPause</code>, <code>RequestSkipToLive</code> partent ; <code>PlayMessage</code>, <code>PauseMessage</code>, <code>NowPlayingMessage</code> reviennent.</li>
+          <li><b>Le protocole.</b> <code>requestplay</code>, <code>requestpause</code>, <code>requestskiptolive</code> partent ; <code>play</code>, <code>pause</code>, <code>nowplaying</code> reviennent — des chaînes en minuscules, pas les noms d'interfaces.</li>
           <li><b>La lecture à la demande.</b> Aucun message ne charge un épisode : le journal affiche l'URL <code>?rpOdId=</code> que la console devrait charger.</li>
           <li><b>Le changement de station.</b> Il charge la console de l'autre station, comme le fait Radioplayer.</li>
         </ul>
@@ -143,13 +147,13 @@ window.addEventListener('message', function(e){
   if(m.type==='__IframeReady'){ line('in','← iframe prête  (station '+m.station+', rpId '+m.rpId+')'); return; }
   if(m.type==='__RequestStationChange'){ line('nav','⇢ la fenêtre du dessus devrait charger  '+m.url); return; }
   line('out','→ '+m.type+(m.odId?'  odId='+m.odId:''));
-  if(m.type==='RequestPlay'){
-    setTimeout(function(){ w.postMessage({type:'PlayMessage'},'*'); line('in','← PlayMessage');
-      setTimeout(function(){ w.postMessage({type:'NowPlayingMessage',title:'RCF Liège',artist:'103.0 FM'},'*');
-        line('in','← NowPlayingMessage  « RCF Liège — 103.0 FM »'); },700); },450);
+  if(m.type==='requestplay'){
+    setTimeout(function(){ w.postMessage({type:'play'},'*'); line('in','← play');
+      setTimeout(function(){ w.postMessage({type:'nowplaying',payload:{now:{name:'RCF Liège',artistName:'103.0 FM'}}},'*');
+        line('in','← nowplaying  « RCF Liège — 103.0 FM »'); },700); },450);
   }
-  if(m.type==='RequestPause'){
-    setTimeout(function(){ w.postMessage({type:'PauseMessage'},'*'); line('in','← PauseMessage'); },120);
+  if(m.type==='requestpause'){
+    setTimeout(function(){ w.postMessage({type:'pause'},'*'); line('in','← pause'); },120);
   }
   if(m.type==='__RequestOnDemand'){
     line('nav','   (dans la vraie console, la page est rechargée — l\\'iframe repart de zéro)');
