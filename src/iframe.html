@@ -18,6 +18,10 @@
      y compris les noms d'émissions et les titres d'épisodes, est du texte
      courant et revient à Open Sans. Si la police n'est pas embarquée, la
      titraille retombe sur Outfit sans que rien d'autre ne bouge. */
+  /* La gouttière. Une seule valeur, dont tout dépend : titres de section,
+     noms de catégorie, tuiles, panneaux. Tant qu'ils s'y réfèrent tous, rien
+     ne peut se désaligner. */
+  --g:20px;
   --ft:'Brandon Grotesque','Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;
   --fb:'Open Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
   --fd:var(--fb);
@@ -37,8 +41,19 @@ body{
 }
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
 .fd{font-family:var(--fd)}
-.scroll-hidden{-ms-overflow-style:none;scrollbar-width:none}
-.scroll-hidden::-webkit-scrollbar{display:none}
+ /* Les carrousels gardent une barre de défilement, mais fine et discrète :
+    masquée, rien n'indiquait qu'il y avait quelque chose à droite. Sur mobile
+    elle n'apparaît pas de toute façon. */
+.defile{-ms-overflow-style:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.defile::-webkit-scrollbar{height:6px}
+.defile::-webkit-scrollbar-track{background:transparent}
+.defile::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px}
+.defile::-webkit-scrollbar-thumb:hover{background:var(--faint)}
+/* Et le bord droit s'efface, pour dire qu'il y a une suite. */
+.rail,.pods{
+  -webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);
+  mask-image:linear-gradient(to right,#000 92%,transparent 100%);
+}
 
 /* ═══ 1. EN-TÊTE ══════════════════════════════════════════ */
 .head{
@@ -143,7 +158,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 /* ═══ 2. TITRES DE SECTION ════════════════════════════════ */
 .sec-head{
   display:flex;justify-content:space-between;align-items:baseline;
-  padding:0 20px;margin:22px 0 13px;
+  padding:0 var(--g);margin:26px 0 14px;
 }
 .sec-head h2{
   font-family:var(--ft);font-weight:700;font-size:16px;
@@ -154,12 +169,17 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   letter-spacing:.10em;text-transform:uppercase;color:var(--faint);
 }
 .sec-tag.red{color:var(--rcf)}
-.rule{height:1px;background:var(--line);margin:24px 20px 0}
+.rule{height:1px;background:var(--line);margin:26px var(--g) 0}
 
 /* ═══ 3. CARROUSEL PROGRAMME ══════════════════════════════ */
 .rail{
   display:flex;gap:13px;overflow-x:auto;
-  padding:4px 20px 6px;scroll-snap-type:x mandatory;
+  padding:4px var(--g) 8px;
+  /* scroll-snap aligne sur le bord du conteneur de défilement, pas sur sa boîte
+     de remplissage : sans scroll-padding, le navigateur fait défiler de la
+     valeur du padding dès le chargement et la marge gauche disparaît. C'est ce
+     qui collait la première tuile au bord de l'écran. */
+  scroll-snap-type:x mandatory;scroll-padding-left:var(--g);
 }
 /* 16:9 — c'est le seul format que RCF produit : tous les visuels sont servis
    en 304 × 171. Un cadre carré en recadrait près de la moitié. */
@@ -232,41 +252,47 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
    rubrique. Défaut : rouge, si une catégorie arrivait sans couleur. */
 .cat{--c:var(--rcf);--cd:var(--rcf);position:relative;margin-bottom:6px}
 .cat-h{
-  display:flex;align-items:center;gap:9px;padding:0 20px;margin:16px 0 9px;
+  position:relative;display:flex;align-items:center;padding:0 var(--g);margin:0 0 11px;
 }
 .cat-bar{
-  width:4px;height:14px;border-radius:2px;background:var(--c);flex:0 0 auto;
 }
 .cat-h b{
-  font-family:var(--ft);font-weight:700;font-size:12px;
-  text-transform:uppercase;letter-spacing:.06em;color:var(--ink);
+  font-family:var(--ft);font-weight:700;font-size:13px;
+  text-transform:uppercase;letter-spacing:.05em;color:var(--ink);
 }
 .cat-h i{
   font-style:normal;font-size:10.5px;color:var(--faint);font-weight:600;
 }
-/* La ligne repose sur un aplat très descendu de sa couleur. C'est lui le
-   contenant : il englobe le titre, le carrousel et le panneau d'épisodes, et
-   grandit avec eux quand une émission s'ouvre. Rien d'autre n'a donc besoin
-   d'un cadre à l'intérieur.
+/* La bande. Un aplat très descendu de la couleur, qui contient le titre, le
+   carrousel et le panneau d'épisodes et grandit avec eux. Pleine largeur et
+   sans arrondi : un arrondi collé au bord de la fente donne des coins tronqués.
+   Le repère de couleur est une petite barre juste avant le nom de la rubrique.
+   Elle est posée en absolu et déborde dans la gouttière plutôt que d'être dans
+   le flux : si elle poussait le titre, celui-ci ne s'alignerait plus sur
+   « À réécouter » ni sur les tuiles. La barre pend donc dans la marge, le titre
+   reste sur la gouttière, et les deux sont là où on les attend.
    L'aplat est tiré de --cd et non de --c : les teintes de charte n'ont pas la
    même clarté, et à 7,5 % sur blanc le rose disparaissait quand le rouge se
    voyait bien. Les variantes assombries sont toutes à ~4,5:1, donc leurs voiles
    pèsent le même poids. L'opacité passe par un calque plutôt que par
    color-mix : plus portable. */
-.cat{padding:2px 0 10px;margin-bottom:10px}
+.cat{padding:15px 0 4px;margin-bottom:6px}
 .cat::before{
   content:'';position:absolute;inset:0;background:var(--cd);opacity:.075;
-  border-radius:18px;pointer-events:none;
+  pointer-events:none;
 }
-.cat-h{margin-top:12px}
+.cat-bar{
+  position:absolute;left:calc(var(--g) - 14px);top:50%;transform:translateY(-50%);
+  width:4px;height:16px;border-radius:4px;background:var(--c);
+}
+
 /* ?sans-bandes=1 retire l'aplat, pour comparer. */
-[data-bandes="0"] .cat{padding:0;margin-bottom:6px}
+[data-bandes="0"] .cat{padding:0;margin-bottom:14px}
 [data-bandes="0"] .cat::before{content:none}
-[data-bandes="0"] .cat-h{margin-top:16px}
 .pod-wrap{position:relative}
 .pods{
-  display:flex;gap:12px;overflow-x:auto;padding:2px 20px 8px;
-  scroll-snap-type:x mandatory;
+  display:flex;gap:16px;overflow-x:auto;padding:5px var(--g) 14px;
+  scroll-snap-type:x mandatory;scroll-padding-left:var(--g);
 }
 .pod{flex:0 0 auto;width:156px;scroll-snap-align:start;cursor:pointer}
 .pod-img{
@@ -287,13 +313,15 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
 }
 .pod-meta{
-  font-size:10.5px;color:var(--muted);margin-top:6px;font-weight:600;
+  font-size:11px;color:var(--muted);margin-top:8px;font-weight:600;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 
 /* ═══ 5. PANNEAU DES ÉPISODES ═════════════════════════════ */
 .eps{
-  margin:4px 20px 6px;max-height:296px;overflow-y:auto;border-radius:14px;overflow:hidden;
+  /* 374 = en-tête (38) + cinq lignes pleines (61) + une moitié : la ligne
+     coupée dit qu'il y en a d'autres, sans donner l'impression d'un bug. */
+  margin:4px var(--g) 8px;max-height:374px;overflow-y:auto;border-radius:14px;overflow:hidden;
   /* Pas de cadre : le panneau est posé en blanc sur l'aplat de la ligne, qui
      fait déjà office de contenant. C'est le fond clair qui le détache. */
   background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.07);
@@ -302,40 +330,43 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 @keyframes drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 .eps-h{
   display:flex;justify-content:space-between;gap:10px;align-items:center;
-  padding:9px 13px;border-bottom:1px solid var(--line);
+  padding:11px 16px;border-bottom:1px solid var(--line);
 }
 .eps-h span:first-child{
-  font-family:var(--ft);font-weight:700;font-size:10px;
-  letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+  font-family:var(--ft);font-weight:700;font-size:10.5px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
 }
 .eps-h b{
-  font-family:var(--fd);font-weight:700;font-size:10.5px;color:var(--cd);
+  font-family:var(--fd);font-weight:700;font-size:11.5px;color:var(--cd);
   max-width:56%;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .ep{
-  display:flex;align-items:center;gap:11px;width:100%;
-  padding:10px 13px;border-bottom:1px solid rgba(229,231,235,.9);
+  display:flex;align-items:center;gap:14px;width:100%;
+  padding:12px 16px;border-bottom:1px solid rgba(229,231,235,.9);
   transition:background .15s;
 }
 .ep:last-child{border-bottom:0}
 .ep:hover{background:var(--surface)}
 .ep-btn{
-  width:28px;height:28px;border-radius:50%;flex:0 0 auto;
-  background:#E3E5E9;color:#fff;display:grid;place-items:center;transition:background .2s;
+  width:36px;height:36px;border-radius:50%;flex:0 0 auto;
+  /* Icône grise sur gris clair au repos : une flèche blanche sur ce fond ne se
+     voyait pas. Elle passe en blanc une fois le bouton coloré. */
+  background:#F1F2F4;color:var(--muted);display:grid;place-items:center;
+  transition:background .2s,color .2s,transform .2s;
 }
-.ep.on .ep-btn,.ep:hover .ep-btn{background:var(--cd)}
+.ep.on .ep-btn,.ep:hover .ep-btn{background:var(--cd);color:#fff;transform:scale(1.05)}
 .ep.on{background:var(--surface)}
 .ep-txt{flex:1;min-width:0}
 .ep-t{
-  font-weight:700;font-size:12px;color:#1F2937;line-height:1.3;
+  font-weight:700;font-size:13px;color:#1F2937;line-height:1.3;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
   overflow-wrap:anywhere;
 }
-.ep-m{font-size:10.5px;color:var(--faint);margin-top:2px}
+.ep-m{font-size:11px;color:var(--faint);margin-top:3px}
 .nouveau{
-  font-family:var(--ft);font-weight:700;font-size:8.5px;letter-spacing:.09em;
+  font-family:var(--ft);font-weight:700;font-size:9px;letter-spacing:.08em;
   text-transform:uppercase;background:var(--cd);color:#fff;
-  padding:2.5px 5px;border-radius:4px;flex:0 0 auto;
+  padding:3px 6px;border-radius:6px;flex:0 0 auto;
 }
 
 /* ═══ 7. VARIANTE LARGE — widgets:["IF"] ══════════════════ */
@@ -353,14 +384,10 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   .h-title{text-align:left;font-size:25px;margin-bottom:4px}
   .h-sub{text-align:left;margin-bottom:0;font-size:13.5px}
   .big-play{width:70px;height:70px}
-  .rail{padding-left:26px;padding-right:26px}
-  .pods{padding-left:21px;padding-right:21px}
+  :root{--g:26px}
   .pod{width:200px}
   .card{width:200px}
-  .sec-head{padding:0 26px;margin-top:18px}
-  .rule{margin-left:26px;margin-right:26px}
-  .eps{margin-left:22px;margin-right:22px}
-  .foot{padding-left:26px;padding-right:26px}
+  .sec-head{margin-top:20px}
 }
 </style>
 </head>
@@ -393,7 +420,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   <h2 class="fd">Programme</h2>
   <span class="sec-tag red" id="secDay">Aujourd'hui</span>
 </div>
-<div class="rail scroll-hidden" id="rail"></div>
+<div class="rail defile" id="rail"></div>
 
 <div class="rule"></div>
 
@@ -463,9 +490,32 @@ rows.forEach(function(r){
   var m=toMin(r.t); if(m<prev) abs+=1440; prev=m; r.abs=abs+m;
   r.state = r.type==='live' ? 'direct' : (r.audio ? 'ecoutable' : 'sans');
 });
-var nowAbs = new Date().getHours()*60 + new Date().getMinutes();
+/* Où en est-on dans la grille ?
+   Les rangs portent un temps cumulé : la grille commence à l'heure de sa
+   première case et franchit minuit en ajoutant 1440. L'horloge, elle, repart de
+   zéro à minuit. Comparer les deux directement fait donc retomber sur la
+   première case dès qu'on écoute après minuit — il faut rattraper le tour. */
+var d = new Date();
+var nowAbs = d.getHours()*60 + d.getMinutes();
+var debut = rows.length ? rows[0].abs : 0;
+while(nowAbs < debut && nowAbs + 1440 <= (rows.length ? rows[rows.length-1].abs : 0) + 1440){
+  nowAbs += 1440; break;
+}
 var curIdx = 0;
 for(var i=0;i<rows.length;i++){ if(rows[i].abs<=nowAbs) curIdx=i; }
+
+/* Le programme ne montre pas la journée entière mais une fenêtre autour de
+   l'émission en cours : quelques cases derrière pour le rattrapage, davantage
+   devant pour ce qui arrive. La fenêtre garde une taille constante et se cale
+   contre les extrémités — à 23 h 30 on ne se retrouve donc pas avec une seule
+   case à l'écran, mais avec la fin de soirée entière.
+   Limite connue : la grille est celle d'une journée. Tant qu'on ne dispose pas
+   de celle du lendemain, la fenêtre s'arrête au dernier rendez-vous du jour. */
+var AVANT = 4, APRES = 13, LARGEUR = AVANT + 1 + APRES;
+var debutFen = Math.max(0, Math.min(curIdx - AVANT, rows.length - LARGEUR));
+var finFen   = Math.min(rows.length, debutFen + LARGEUR);
+rows = rows.slice(debutFen, finFen);
+curIdx -= debutFen;
 
 /* ─── tri des podcasts ────────────────────────────────── */
 // Du plus récent au plus ancien : la date de diffusion d'abord ; à date égale,
@@ -525,8 +575,8 @@ var PLAY_L ='<svg width="24" height="24" viewBox="0 0 18 18" fill="currentColor"
 var PAUSE_L='<svg width="22" height="22" viewBox="0 0 18 18" fill="currentColor"><rect x="3.2" y="2.2" width="4.2" height="13.6" rx="1.5"/><rect x="10.6" y="2.2" width="4.2" height="13.6" rx="1.5"/></svg>';
 var PLAY_M ='<svg width="13" height="13" viewBox="0 0 18 18" fill="currentColor" style="margin-left:2px"><path d="M4.4 2.4 15.2 9 4.4 15.6z"/></svg>';
 var PAUSE_M='<svg width="12" height="12" viewBox="0 0 18 18" fill="currentColor"><rect x="3.2" y="2.2" width="4.2" height="13.6" rx="1.5"/><rect x="10.6" y="2.2" width="4.2" height="13.6" rx="1.5"/></svg>';
-var PLAY_S ='<svg width="10" height="10" viewBox="0 0 18 18" fill="#fff" style="margin-left:2px"><path d="M4.4 2.4 15.2 9 4.4 15.6z"/></svg>';
-var PAUSE_S='<svg width="10" height="10" viewBox="0 0 18 18" fill="#fff"><rect x="3.2" y="2.2" width="4.2" height="13.6" rx="1.5"/><rect x="10.6" y="2.2" width="4.2" height="13.6" rx="1.5"/></svg>';
+var PLAY_S ='<svg width="12" height="12" viewBox="0 0 18 18" fill="#fff" style="margin-left:2px"><path d="M4.4 2.4 15.2 9 4.4 15.6z"/></svg>';
+var PAUSE_S='<svg width="12" height="12" viewBox="0 0 18 18" fill="#fff"><rect x="3.2" y="2.2" width="4.2" height="13.6" rx="1.5"/><rect x="10.6" y="2.2" width="4.2" height="13.6" rx="1.5"/></svg>';
 
 /* ─── en-tête ─────────────────────────────────────────── */
 function paintLogo(){
@@ -643,7 +693,7 @@ function paintCats(){
       : '';
     return '<div class="cat"'+style+'>'+
       '<div class="cat-h"><span class="cat-bar"></span><b>'+esc(c.nom)+'</b></div>'+
-      '<div class="pods scroll-hidden">'+tuiles+'</div>'+
+      '<div class="pods defile">'+tuiles+'</div>'+
       '<div id="eps-'+ci+'"></div>'+
     '</div>';
   }).join('');

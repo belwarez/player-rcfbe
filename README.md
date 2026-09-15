@@ -142,10 +142,17 @@ sur blanc, pour tout ce qui porte des lettres. Le rose fait exception — assomb
 saturation pleine il vire au cramoisi et redevient confondable avec le rouge, il
 est donc désaturé de 30 % d'abord.
 
-**Chaque catégorie est une bande.** Un aplat de sa couleur à 7,5 % sur blanc
-contient le titre, le carrousel et le panneau d'épisodes, et grandit avec eux
-quand une émission s'ouvre. C'est l'aplat qui fait contenant : le panneau
+**Chaque catégorie est une bande** pleine largeur, sans arrondi — un arrondi
+collé au bord de la fente donne des coins tronqués. L'aplat de sa couleur à 7,5 %
+sur blanc contient le titre, le carrousel et le panneau d'épisodes, et grandit
+avec eux quand une émission s'ouvre. C'est lui qui fait contenant : le panneau
 d'épisodes n'a donc pas de cadre, il est simplement posé en blanc dessus.
+
+Le repère de couleur est une petite barre juste avant le nom de la rubrique.
+Elle est **posée en absolu et déborde dans la gouttière** : dans le flux, elle
+pousserait le titre de 14 px et celui-ci ne s'alignerait plus sur « À réécouter »
+ni sur les tuiles. La barre pend donc dans la marge, le titre reste sur la
+gouttière.
 
 L'aplat est tiré de `couleurTexte`, pas de `couleur`. Les teintes de charte n'ont
 pas la même clarté : à 7,5 % sur blanc, le rose audacieux était invisible (13 de
@@ -169,6 +176,27 @@ node build.js
 
 puis renvoyer `docs/`. **Le dossier `docs/` est versionné** — c'est lui qui est
 publié, il ne faut donc pas l'ignorer.
+
+---
+
+## Deux règles de mise en page à ne pas casser
+
+**La gouttière.** Une seule variable, `--g` (20 px, 26 px au-delà de 620 px de
+large). Titres de section, noms de catégorie, tuiles et panneaux d'épisodes s'y
+réfèrent tous. Ne pas remettre de valeur en dur : c'est ce qui les avait
+désalignés.
+
+**`scroll-padding-left` sur les carrousels.** `scroll-snap-type: mandatory`
+aligne sur le bord du conteneur de défilement, pas sur sa boîte de remplissage :
+sans `scroll-padding-left`, le navigateur fait défiler de la valeur du padding
+dès le chargement et la marge gauche disparaît — la première tuile se colle au
+bord de l'écran. Les deux valeurs doivent rester égales.
+
+**La fenêtre du programme.** Le carrousel ne montre pas la journée entière mais
+4 cases derrière et 13 devant, à taille constante, calées contre les extrémités.
+À 23 h on voit donc toute la fin de soirée, pas une case isolée. Limite connue :
+la grille est celle d'une journée, la fenêtre s'arrête au dernier rendez-vous
+faute de disposer du lendemain.
 
 ---
 
