@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnostic — que peut-on appeler depuis ce domaine ?</title>
+<style>
+:root{
+  --rcf:#E2001A; --bg:#F4F4F6; --panel:#fff; --ink:#16181D; --muted:#6B7078;
+  --line:#E4E4EA; --ok:#137A43; --ko:#B3261E; --warn:#9A6400;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0E1014;--panel:#181B21;--ink:#ECEDF0;--muted:#969BA6;--line:#282C35;
+        --ok:#5BD08C;--ko:#FF8A80;--warn:#F3C05B}
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:14px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  padding-block:26px;padding-left:18px;padding-right:18px;
+}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-size:20px;margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px;margin:0 0 6px;max-width:70ch}
+.origin{
+  display:inline-block;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;
+  background:var(--panel);border:1px solid var(--line);border-radius:7px;
+  padding:4px 9px;margin-bottom:20px;
+}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  margin-bottom:11px;overflow:hidden;
+}
+.card-h{
+  display:flex;gap:11px;align-items:center;padding:12px 15px;
+}
+.badge{
+  flex:0 0 auto;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  padding:3px 8px;border-radius:5px;white-space:nowrap;
+}
+.b-run{background:var(--line);color:var(--muted)}
+.b-ok{background:var(--ok);color:#fff}
+.b-ko{background:var(--ko);color:#fff}
+.b-warn{background:var(--warn);color:#fff}
+.name{flex:1;min-width:0;font-weight:600;font-size:13.5px}
+.url{
+  font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+  overflow-wrap:anywhere;display:block;margin-top:2px;font-weight:400;
+}
+.verdict{
+  padding:0 15px 13px;font-size:12.5px;color:var(--muted);
+}
+.verdict b{color:var(--ink)}
+.sum{
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:15px 17px;margin-top:20px;font-size:13px;
+}
+.sum h2{font-size:13px;margin:0 0 9px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.sum p{margin:0 0 9px}
+.sum p:last-child{margin:0}
+code{font:12px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--bg);
+  padding:1px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Que peut-on appeler depuis ce domaine ?</h1>
+  <p class="sub">Cette page décide de l'architecture. Si les routes RCF répondent aux appels
+  venus d'ici, l'iframe peut être une page statique qui interroge RCF directement dans le
+  navigateur. Sinon, il faut un intermédiaire — ou l'héberger sur rcf.be.</p>
+  <div class="origin" id="origin">origine : —</div>
+
+  <div id="tests"></div>
+  <div class="sum" id="sum"><h2>Conclusion</h2><p>Tests en cours…</p></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var TESTS = [
+  { name:"Grille du jour (la route maîtresse)", kind:"json",
+    url:"https://www.rcf.be/wp-json/rcf/v1/programs?station=RCFLiege&date=" + new Date().toISOString().slice(0,10),
+    check:function(j){ return j && j.items ? j.items.length + " créneaux" : "réponse inattendue"; } },
+
+  { name:"Titre en cours", kind:"json",
+    url:"https://www.rcf.be/wp-json/rcf/v1/nowplaying?station=RCFLiege",
+    check:function(j){ return j ? "réponse lue" : "vide"; } },
+
+  { name:"Épisodes par catégorie (rcf.digital)", kind:"json",
+    url:"https://rcf.digital/actualite?radio=liege&page=0&_format=json",
+    check:function(j){ return Array.isArray(j) ? j.length + " entrées" : "réponse lue"; } },
+
+  { name:"Fiches d'émissions A–Z (rcf.digital)", kind:"json",
+    url:"https://rcf.digital/emissions-a-z?radio=34353&page=0&_format=json",
+    check:function(j){ return Array.isArray(j) ? j.length + " fiches" : "réponse lue"; } },
+
+  { name:"Catalogue à la demande Radioplayer", kind:"json",
+    url:"https://core-search.radioplayer.cloud/056/qp/v4/od?rpId=1013",
+    check:function(j){ return j ? "réponse lue" : "vide"; } },
+
+  { name:"Visuel d'émission (assets.radiorcf.com)", kind:"img",
+    url:"https://assets.radiorcf.com/styles/640x360/assets/2024-08/talent-belge-rcf-liege.png.webp" },
+
+  { name:"Visuel d'émission (media.rcf.fr)", kind:"img",
+    url:"https://media.rcf.fr/sites/default/files/styles/304x171/public/2023-09/direction-sud-rcf-liege.png.webp" },
+
+  { name:"Fichier audio d'un épisode", kind:"audio",
+    url:"https://audio.audiomeans.fr/guid/{source_code}/7a51bf99-8d4e-486c-b1b9-f8d4cebc9ddf/fd1e7c8430e3fb16f7ca1358f038ae27b4b3f7bf3177d0e360829c86acfae1f1.mp3" },
+
+  { name:"Flux du direct", kind:"audio",
+    url:"https://rcf.streamakaci.com/rcfliege.mp3" }
+];
+
+var host = document.getElementById('tests');
+var results = [];
+
+var o = document.getElementById('origin');
+o.textContent = 'origine : ' + (location.origin === 'null' ? 'file:// (fichier local)' : location.origin);
+if(location.protocol !== 'http:' && location.protocol !== 'https:'){
+  o.style.borderColor = 'var(--warn)';
+  o.insertAdjacentHTML('afterend',
+    '<p class="sub" style="color:var(--warn);font-weight:600;margin:-14px 0 20px">' +
+    'Cette page est ouverte depuis le disque. Les résultats ne veulent rien dire : ' +
+    'un fichier local n\'a pas d\'origine, tout échouera. À ouvrir depuis l\'hébergement.</p>');
+}
+
+TESTS.forEach(function(t, i){
+  var d = document.createElement('div');
+  d.className = 'card';
+  d.innerHTML =
+    '<div class="card-h"><span class="badge b-run" id="b'+i+'">test…</span>'+
+    '<span class="name">'+t.name+'<span class="url">'+t.url.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span></span></div>'+
+    '<div class="verdict" id="v'+i+'">—</div>';
+  host.appendChild(d);
+});
+
+function set(i, cls, label, verdict){
+  var b = document.getElementById('b'+i);
+  b.className = 'badge ' + cls;
+  b.textContent = label;
+  document.getElementById('v'+i).innerHTML = verdict;
+  results[i] = cls;
+  if(results.filter(Boolean).length === TESTS.length) conclude();
+}
+
+/* Un échec de CORS et une panne réseau lèvent la même erreur.
+   On les sépare en refaisant l'appel en mode no-cors : si celui-là passe,
+   le serveur répond — c'est donc bien CORS qui refuse. */
+function testJson(t, i){
+  fetch(t.url, {mode:'cors'})
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(j){
+      set(i, 'b-ok', 'autorisé',
+        'Appelable depuis ce domaine — <b>' + (t.check ? t.check(j) : 'réponse lue') + '</b>.');
+    })
+    .catch(function(err){
+      fetch(t.url, {mode:'no-cors'}).then(function(){
+        set(i, 'b-ko', 'CORS refusé',
+          'Le serveur répond, mais il n\'autorise pas ce domaine à lire la réponse. ' +
+          'Un intermédiaire serait nécessaire. <b>' + String(err.message || err) + '</b>');
+      }).catch(function(){
+        set(i, 'b-warn', 'injoignable',
+          'Ni en CORS ni autrement. Réseau, blocage, ou route disparue. <b>' +
+          String(err.message || err) + '</b>');
+      });
+    });
+}
+
+function testImg(t, i){
+  var im = new Image(), done = false;
+  var to = setTimeout(function(){ if(!done){ done = true;
+    set(i, 'b-warn', 'délai dépassé', 'Aucune réponse en 8 secondes.'); } }, 8000);
+  im.onload = function(){ if(done) return; done = true; clearTimeout(to);
+    set(i, 'b-ok', 'affichable', 'Image chargée — <b>' + im.naturalWidth + '×' + im.naturalHeight + '</b>. ' +
+      'Les images ne sont pas soumises à CORS pour l\'affichage.'); };
+  im.onerror = function(){ if(done) return; done = true; clearTimeout(to);
+    set(i, 'b-ko', 'échec', 'L\'image ne se charge pas depuis ce domaine.'); };
+  im.src = t.url;
+}
+
+function testAudio(t, i){
+  var a = new Audio(), done = false;
+  a.preload = 'metadata';
+  var to = setTimeout(function(){ if(!done){ done = true;
+    set(i, 'b-warn', 'délai dépassé', 'Pas de métadonnées en 12 secondes. ' +
+      'Pour un flux continu, c\'est parfois normal.'); } }, 12000);
+  function ok(){ if(done) return; done = true; clearTimeout(to);
+    var d = isFinite(a.duration) ? Math.round(a.duration) + ' s' : 'flux continu';
+    set(i, 'b-ok', 'lisible', 'Le navigateur lit ce fichier — <b>' + d + '</b>.'); }
+  a.addEventListener('loadedmetadata', ok);
+  a.addEventListener('canplay', ok);
+  a.addEventListener('error', function(){ if(done) return; done = true; clearTimeout(to);
+    set(i, 'b-ko', 'échec', 'Le navigateur refuse ce fichier depuis ce domaine.'); });
+  a.src = t.url;
+  a.load();
+}
+
+TESTS.forEach(function(t, i){
+  if(t.kind === 'json') testJson(t, i);
+  else if(t.kind === 'img') testImg(t, i);
+  else testAudio(t, i);
+});
+
+function conclude(){
+  var grille = results[0], digital = results[2] === 'b-ok' || results[3] === 'b-ok';
+  var html = '';
+  if(grille === 'b-ok'){
+    html += '<p><b>La grille est appelable depuis ce domaine.</b> Une page statique suffit : ' +
+            'l\'iframe peut interroger RCF directement dans le navigateur, sans serveur, ' +
+            'avec des données fraîches à chaque ouverture.</p>';
+  } else if(grille === 'b-ko'){
+    html += '<p><b>La grille refuse ce domaine.</b> Deux issues : héberger l\'iframe sur ' +
+            '<code>rcf.be</code>, où la question ne se pose plus ; ou passer par un ' +
+            'intermédiaire qui relaie l\'appel et ajoute l\'en-tête manquant.</p>';
+  } else {
+    html += '<p><b>La grille est injoignable.</b> À reprendre : ce n\'est pas forcément un ' +
+            'problème de CORS.</p>';
+  }
+  if(!digital && (results[2] === 'b-ko' || results[3] === 'b-ko')){
+    html += '<p>Les routes <code>rcf.digital</code> refusent aussi ce domaine. Elles ne servent ' +
+            'que la profondeur d\'archive : leur blocage n\'empêche pas un premier player.</p>';
+  }
+  if(results[5] === 'b-ok' || results[6] === 'b-ok'){
+    html += '<p>Les visuels s\'affichent : rien à prévoir de ce côté.</p>';
+  }
+  if(results[8] === 'b-ok'){
+    html += '<p>Le flux du direct est lisible depuis ce domaine — utile à savoir, même si ' +
+            'c\'est le lecteur Radioplayer qui le jouera.</p>';
+  }
+  var s = document.getElementById('sum');
+  s.innerHTML = '<h2>Conclusion</h2>' + html;
+}
+})();
+</script>
+</body>
+</html>

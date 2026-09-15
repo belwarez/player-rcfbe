@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RCF Liège</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rcf:#E2001A; --rcf-dark:#B30015;
+  --bg:#FFFFFF; --surface:#F8F9FA; --line:#E5E7EB;
+  --ink:#111827; --muted:#6B7280; --faint:#9CA3AF;
+  --fd:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --fb:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+html{height:100%}
+body{
+  margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font-family:var(--fb);font-size:13px;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.fd{font-family:var(--fd)}
+.scroll-hidden{-ms-overflow-style:none;scrollbar-width:none}
+.scroll-hidden::-webkit-scrollbar{display:none}
+
+/* ═══ 1. EN-TÊTE ══════════════════════════════════════════ */
+.head{
+  background:var(--rcf);color:#fff;
+  display:flex;flex-direction:column;align-items:center;
+  padding:18px 18px 28px;
+  border-radius:0 0 38px 38px;
+  box-shadow:0 10px 26px rgba(226,0,26,.20);
+  position:relative;z-index:2;
+}
+.head-main{display:flex;flex-direction:column;align-items:center;width:100%}
+
+/* Sélecteur de stations */
+.stations{
+  display:flex;gap:4px;width:100%;max-width:330px;
+  background:rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.11);
+  padding:4px;border-radius:999px;margin-bottom:18px;
+}
+.st{
+  flex:1;min-width:0;padding:6px 4px;border-radius:999px;text-align:center;white-space:nowrap;
+  font-family:var(--fd);font-weight:700;font-size:10.5px;letter-spacing:.005em;
+  color:rgba(255,255,255,.72);
+  transition:background .25s,color .25s,box-shadow .25s;
+}
+.st:hover{color:#fff;background:rgba(255,255,255,.11)}
+.st.on{background:#fff;color:var(--rcf);box-shadow:0 1px 3px rgba(0,0,0,.16)}
+.st.todo{opacity:.62}
+.st-hint{
+  font-size:10.5px;font-weight:600;color:rgba(255,255,255,.92);
+  background:rgba(0,0,0,.26);border:1px solid rgba(255,255,255,.12);
+  padding:5px 11px;border-radius:9px;margin:-8px 0 14px;
+  animation:drop .2s ease-out both;
+}
+
+.logo{
+  width:66px;height:66px;border-radius:17px;overflow:hidden;position:relative;
+  box-shadow:0 6px 18px rgba(0,0,0,.22);
+  outline:1px solid rgba(255,255,255,.22);outline-offset:-1px;
+  margin-bottom:16px;flex:0 0 auto;
+  display:grid;place-items:center;background:var(--rcf-dark);
+}
+.logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.logo .fallback{font-family:var(--fd);font-weight:900;font-size:19px;letter-spacing:-.02em}
+
+.pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.14);
+  padding:5px 11px;border-radius:999px;margin-bottom:14px;
+}
+.pill-label{
+  font-family:var(--fd);font-weight:700;font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;
+}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.45)}
+.on .dot{background:#fff;animation:blink 2s cubic-bezier(.4,0,.6,1) infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.eq{display:flex;align-items:flex-end;gap:2.5px;height:13px;
+  padding-left:8px;margin-left:1px;border-left:1px solid rgba(255,255,255,.22)}
+.eq i{width:2.5px;border-radius:2px;background:rgba(255,255,255,.5);height:40%}
+.on .eq i{background:#fff;height:100%;transform-origin:bottom;animation:eq .9s ease-in-out infinite}
+.on .eq i:nth-child(2){animation-delay:.18s}
+.on .eq i:nth-child(3){animation-delay:.32s}
+.on .eq i:nth-child(4){animation-delay:.08s}
+@keyframes eq{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+
+.h-title{
+  font-family:var(--fd);font-weight:800;font-size:19px;line-height:1.16;
+  letter-spacing:-.02em;text-align:center;margin:0 0 4px;
+  text-shadow:0 1px 2px rgba(0,0,0,.10);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.h-sub{
+  font-weight:600;font-size:12.5px;color:rgba(255,255,255,.78);
+  text-align:center;margin:0 0 20px;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
+}
+.big-play{
+  width:64px;height:64px;border-radius:50%;background:#fff;color:var(--rcf);
+  display:grid;place-items:center;flex:0 0 auto;
+  box-shadow:0 8px 22px rgba(0,0,0,.20);
+  transition:transform .18s cubic-bezier(.34,1.3,.64,1);
+}
+.big-play:hover{transform:scale(1.07)}
+.big-play:active{transform:scale(.94)}
+.big-play svg{display:block}
+
+/* ═══ 2. TITRES DE SECTION ════════════════════════════════ */
+.sec-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:0 20px;margin:22px 0 13px;
+}
+.sec-head h2{
+  font-family:var(--fd);font-weight:700;font-size:17px;
+  letter-spacing:-.015em;margin:0;
+}
+.sec-tag{
+  font-family:var(--fd);font-weight:700;font-size:10px;
+  letter-spacing:.10em;text-transform:uppercase;color:var(--faint);
+}
+.sec-tag.red{color:var(--rcf)}
+.rule{height:1px;background:var(--line);margin:24px 20px 0}
+
+/* ═══ 3. CARROUSEL PROGRAMME ══════════════════════════════ */
+.rail{
+  display:flex;gap:13px;overflow-x:auto;
+  padding:4px 20px 6px;scroll-snap-type:x mandatory;
+}
+.card{
+  flex:0 0 auto;width:128px;scroll-snap-align:center;
+  display:flex;flex-direction:column;
+  transition:opacity .3s,filter .3s;
+}
+.card.past{opacity:.4;filter:grayscale(1)}
+.card.past:hover{opacity:.92;filter:grayscale(0)}
+.card-img{
+  position:relative;width:128px;height:128px;border-radius:16px;overflow:hidden;
+  background:linear-gradient(140deg,var(--rcf),var(--rcf-dark));
+  display:grid;place-items:center;margin-bottom:9px;
+  box-shadow:0 2px 8px rgba(0,0,0,.10);
+}
+.card.now .card-img{
+  box-shadow:0 0 0 3px var(--rcf),0 5px 22px rgba(226,0,26,.30);
+}
+.card-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.card-img .fallback{
+  font-family:var(--fd);font-weight:900;font-size:26px;color:rgba(255,255,255,.60);
+  letter-spacing:-.03em;
+}
+.tag{
+  position:absolute;left:7px;bottom:7px;
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:var(--fd);font-weight:700;font-size:9px;
+  letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 6px;border-radius:5px;
+  box-shadow:0 2px 6px rgba(0,0,0,.22);
+}
+.tag.direct{background:var(--rcf);color:#fff}
+.tag.direct .d{width:5px;height:5px;border-radius:50%;background:#fff;animation:blink 2s infinite}
+/* En haut : sinon elle heurte le bouton de lecture dans 128 px. */
+.tag.antenne{background:#fff;color:var(--rcf);top:7px;bottom:auto}
+.tag.antenne .d{width:5px;height:5px;border-radius:50%;background:var(--rcf);animation:blink 2s infinite}
+.card-note{
+  font-size:10px;color:var(--faint);margin-top:3px;font-style:italic;
+}
+.card-play{
+  position:absolute;right:7px;bottom:7px;
+  width:30px;height:30px;border-radius:50%;background:#fff;color:var(--rcf);
+  display:grid;place-items:center;box-shadow:0 2px 9px rgba(0,0,0,.26);
+  transition:transform .16s;
+}
+.card-play:hover{transform:scale(1.13)}
+.card-play.on{background:var(--ink);color:#fff}
+.card-t{
+  font-family:var(--fd);font-weight:700;font-size:11px;color:var(--rcf);
+  margin-bottom:2px;font-variant-numeric:tabular-nums;
+}
+.card.past .card-t{color:var(--muted)}
+.card-name{
+  font-family:var(--fd);font-weight:700;font-size:12.5px;line-height:1.2;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  overflow-wrap:anywhere;margin-bottom:2px;
+}
+.card-ep{
+  font-size:11px;color:var(--muted);line-height:1.25;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  overflow-wrap:anywhere;
+}
+
+/* ═══ 4. CARROUSEL PODCASTS ═══════════════════════════════ */
+.pod-wrap{position:relative}
+.fade{position:absolute;top:0;bottom:0;width:26px;z-index:3;pointer-events:none}
+.fade.l{left:0;background:linear-gradient(90deg,#fff,rgba(255,255,255,0))}
+.fade.r{right:0;background:linear-gradient(270deg,#fff,rgba(255,255,255,0))}
+.pods{
+  display:flex;gap:11px;overflow-x:auto;padding:4px 15px 8px;
+  scroll-snap-type:x mandatory;
+}
+.pod{flex:0 0 auto;width:calc(50% - 20px);min-width:132px;scroll-snap-align:start;cursor:pointer}
+.pod-img{
+  position:relative;width:100%;aspect-ratio:1;border-radius:16px;overflow:hidden;
+  background:linear-gradient(140deg,var(--rcf),var(--rcf-dark));
+  display:grid;place-items:center;
+  box-shadow:0 2px 9px rgba(0,0,0,.11);
+  opacity:.6;transition:opacity .3s,box-shadow .3s,transform .3s;
+}
+.pod.active .pod-img{opacity:1;box-shadow:0 5px 18px rgba(0,0,0,.17)}
+.pod-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pod-img .fallback{
+  font-family:var(--fd);font-weight:900;font-size:30px;color:rgba(255,255,255,.55);
+  letter-spacing:-.03em;
+}
+.pod-veil{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.68),rgba(0,0,0,.04) 55%,transparent);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:11px 10px;
+}
+.pod-name{
+  font-family:var(--fd);font-weight:700;font-size:12.5px;line-height:1.18;color:#fff;
+  text-shadow:0 1px 4px rgba(0,0,0,.45);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.pod-n{font-size:10px;color:rgba(255,255,255,.72);margin-top:3px;font-weight:600}
+.dots{display:flex;justify-content:center;gap:5px;padding:2px 0 6px}
+.dots b{height:5px;border-radius:3px;background:#D8DAE0;transition:all .3s;cursor:pointer;display:block}
+
+/* ═══ 5. PANNEAU DES ÉPISODES ═════════════════════════════ */
+.eps{
+  margin:6px 16px 0;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  background:var(--surface);
+  animation:drop .22s ease-out both;
+}
+@keyframes drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.eps-h{
+  display:flex;justify-content:space-between;gap:10px;align-items:center;
+  padding:9px 13px;border-bottom:1px solid var(--line);
+}
+.eps-h span:first-child{
+  font-family:var(--fd);font-weight:700;font-size:10px;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+}
+.eps-h b{
+  font-family:var(--fd);font-weight:700;font-size:10.5px;color:var(--rcf);
+  max-width:56%;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.ep{
+  display:flex;align-items:center;gap:11px;width:100%;
+  padding:10px 13px;border-bottom:1px solid rgba(229,231,235,.75);
+  transition:background .15s;
+}
+.ep:last-child{border-bottom:0}
+.ep:hover{background:#fff}
+.ep-btn{
+  width:28px;height:28px;border-radius:50%;flex:0 0 auto;
+  background:#E3E5E9;color:#fff;display:grid;place-items:center;transition:background .2s;
+}
+.ep.on .ep-btn,.ep:hover .ep-btn{background:var(--rcf)}
+.ep.on{background:#fff}
+.ep-txt{flex:1;min-width:0}
+.ep-t{
+  font-weight:700;font-size:12px;color:#1F2937;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  overflow-wrap:anywhere;
+}
+.ep-m{font-size:10.5px;color:var(--faint);margin-top:2px}
+.nouveau{
+  font-family:var(--fd);font-weight:700;font-size:8.5px;letter-spacing:.09em;
+  text-transform:uppercase;background:var(--rcf);color:#fff;
+  padding:2.5px 5px;border-radius:4px;flex:0 0 auto;
+}
+
+/* ═══ 6. PIED ═════════════════════════════════════════════ */
+.foot{
+  display:flex;justify-content:space-between;gap:10px;
+  padding:14px 20px 18px;font-size:10px;color:var(--faint);
+}
+.foot b{font-family:var(--fd);font-weight:700;color:var(--muted)}
+
+/* ═══ 7. VARIANTE LARGE — widgets:["IF"] ══════════════════ */
+@media (min-width:620px){
+  .head{padding:12px 26px 16px;border-radius:0 0 30px 30px;align-items:stretch}
+  .head-main{flex-direction:row;align-items:center;gap:18px}
+  .stations{width:auto;max-width:none;margin:0 0 12px auto}
+  .st{flex:0 0 auto;padding:6px 16px;font-size:11.5px}
+  .st-hint{margin:-6px 0 12px auto;align-self:flex-end}
+  .head-mid{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start}
+  .logo{margin-bottom:0;width:72px;height:72px}
+  .pill{margin-bottom:9px}
+  .h-title{text-align:left;font-size:22px;margin-bottom:3px}
+  .h-sub{text-align:left;margin-bottom:0}
+  .rail{padding-left:26px;padding-right:26px}
+  .pods{padding-left:21px;padding-right:21px}
+  .pod{width:150px;min-width:150px}
+  .sec-head{padding:0 26px;margin-top:18px}
+  .rule{margin-left:26px;margin-right:26px}
+  .eps{margin-left:22px;margin-right:22px}
+  .foot{padding-left:26px;padding-right:26px}
+}
+</style>
+</head>
+<body>
+
+<!-- 1. EN-TÊTE -->
+<div class="head" id="head">
+  <div class="stations" id="stations" role="tablist"></div>
+  <div class="st-hint" id="stHint" hidden></div>
+  <div class="head-main">
+    <div class="logo" id="logo"></div>
+    <div class="head-mid">
+      <div class="pill">
+        <span class="dot"></span>
+        <span class="pill-label" id="pillLabel">En direct</span>
+        <span class="eq"><i></i><i></i><i></i><i></i></span>
+      </div>
+      <h1 class="h-title" id="hTitle">RCF Liège</h1>
+      <p class="h-sub" id="hSub"></p>
+    </div>
+    <button class="big-play" id="bigPlay" aria-label="Écouter le direct"></button>
+  </div>
+</div>
+
+<!-- 2. PROGRAMME -->
+<div class="sec-head">
+  <h2 class="fd">Programme</h2>
+  <span class="sec-tag red" id="secDay">Aujourd'hui</span>
+</div>
+<div class="rail scroll-hidden" id="rail"></div>
+
+<div class="rule"></div>
+
+<!-- 3. À RÉÉCOUTER -->
+<div class="sec-head">
+  <h2 class="fd">À réécouter</h2>
+  <span class="sec-tag">Podcasts</span>
+</div>
+<div class="pod-wrap">
+  <div class="fade l"></div><div class="fade r"></div>
+  <div class="pods scroll-hidden" id="pods"></div>
+  <div class="dots" id="dots"></div>
+</div>
+<div id="epsHost"></div>
+
+<div class="foot">
+  <span><b id="footCount">—</b> créneaux réécoutables</span>
+  <span id="footDate"></span>
+</div>
+
+<script id="rcf-data" type="application/json">/*__DATA__*/</script>
+<script id="rcf-logo" type="text/plain">/*__LOGO__*/</script>
+<script>
+(function(){
+"use strict";
+
+var D = JSON.parse(document.getElementById('rcf-data').textContent);
+var LOGO = (document.getElementById('rcf-logo').textContent || '').trim();
+var K = D.gridKeys, P = D.prefixes, RPID = D.station.rpId;
+
+/* ─── utilitaires ─────────────────────────────────────── */
+function expand(s){ if(!s) return ''; var i=s.indexOf('|'); return i<0?s:(P[s.slice(0,i)]||'')+s.slice(i+1); }
+function img(s){ return expand(s).replace('{style_name}','640x360'); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function mins(ms){ if(!ms) return ''; var s=Math.round(ms/1000);
+  return s<60 ? s+' s' : Math.round(s/60)+' min'; }
+function mono(t){
+  t=(t||'?').trim();
+  var w=t.split(/[\s'’•·]+/).filter(function(x){return /[A-Za-zÀ-ÿ0-9]/.test(x)});
+  if(!w.length) return '?';
+  return (w[0][0]+(w[1]?w[1][0]:'')).toUpperCase();
+}
+// L'image est posée PAR-DESSUS le monogramme : si elle échoue, elle s'efface.
+function visual(src, title){
+  var u = img(src);
+  var f = '<span class="fallback">'+esc(mono(title))+'</span>';
+  return u ? f+'<img src="'+esc(u)+'" alt="" loading="lazy" onerror="this.remove()">' : f;
+}
+function toMin(t){ var p=(t||'0:0').split(':'); return (+p[0])*60+(+p[1]); }
+function fmtDay(d){
+  if(!d) return '';
+  var M=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  var p=d.split('-'); return (+p[2])+' '+M[(+p[1])-1];
+}
+function el(id){ return document.getElementById(id); }
+
+/* ─── grille ──────────────────────────────────────────── */
+var rows = D.grid.map(function(a){ var o={}; K.forEach(function(k,i){o[k]=a[i]});
+  o.show=(o.show||'').trim(); o.ep=(o.ep||'').trim(); return o; });
+var abs=0, prev=-1;
+rows.forEach(function(r){
+  var m=toMin(r.t); if(m<prev) abs+=1440; prev=m; r.abs=abs+m;
+  r.state = r.type==='live' ? 'direct' : (r.audio ? 'ecoutable' : 'sans');
+});
+var nowAbs = new Date().getHours()*60 + new Date().getMinutes();
+var curIdx = 0;
+for(var i=0;i<rows.length;i++){ if(rows[i].abs<=nowAbs) curIdx=i; }
+
+/* ─── état ────────────────────────────────────────────── */
+var playingLive=false, playingEp=null, podIdx=0, openPod=null, podTimer=null;
+
+/* ─── dialogue avec la console Radioplayer ────────────── */
+// Le son appartient au player Radioplayer. Aucune balise <audio> ici.
+function send(type, extra){
+  var m = {type:type}; if(extra) for(var k in extra) m[k]=extra[k];
+  try{ parent.postMessage(m,'*'); }catch(e){}
+}
+function log(label, payload){
+  try{ parent.postMessage({type:'__DebugLog', label:label, payload:payload}, '*'); }catch(e){}
+}
+window.addEventListener('message', function(e){
+  var m=e.data; if(!m||typeof m!=='object'||!m.type) return;
+  if(m.type==='PlayMessage'){ playingLive=true; paintHead(); }
+  if(m.type==='PauseMessage'){ playingLive=false; playingEp=null; paintHead(); paintRail(); paintPods(); }
+  if(m.type==='NowPlayingMessage' && m.title){
+    el('hSub').textContent = m.title + (m.artist ? ' — '+m.artist : '');
+  }
+});
+
+/* ─── icônes ──────────────────────────────────────────── */
+var PLAY_L ='<svg width="24" height="24" viewBox="0 0 18 18" fill="currentColor" style="margin-left:3px"><path d="M4.4 2.4 15.2 9 4.4 15.6z"/></svg>';
+var PAUSE_L='<svg width="22" height="22" viewBox="0 0 18 18" fill="currentColor"><rect x="3.2" y="2.2" width="4.2" height="13.6" rx="1.5"/><rect x="10.6" y="2.2" width="4.2" height="13.6" rx="1.5"/></svg>';
+var PLAY_M ='<svg width="13" height="13" viewBox="0 0 18 18" fill="currentColor" style="margin-left:2px"><path d="M4.4 2.4 15.2 9 4.4 15.6z"/></svg>';
+var PAUSE_M='<svg width="12" height="12" viewBox="0 0 18 18" fill="currentColor"><rect x="3.2" y="2.2" width="4.2" height="13.6" rx="1.5"/><rect x="10.6" y="2.2" width="4.2" height="13.6" rx="1.5"/></svg>';
+var PLAY_S ='<svg width="10" height="10" viewBox="0 0 18 18" fill="#fff" style="margin-left:2px"><path d="M4.4 2.4 15.2 9 4.4 15.6z"/></svg>';
+var PAUSE_S='<svg width="10" height="10" viewBox="0 0 18 18" fill="#fff"><rect x="3.2" y="2.2" width="4.2" height="13.6" rx="1.5"/><rect x="10.6" y="2.2" width="4.2" height="13.6" rx="1.5"/></svg>';
+
+/* ─── en-tête ─────────────────────────────────────────── */
+el('logo').innerHTML = LOGO
+  ? '<img src="'+LOGO+'" alt="RCF Liège" onerror="this.remove()"><span class="fallback">RCF</span>'
+  : '<span class="fallback">RCF</span>';
+
+/* ─── sélecteur de stations ───────────────────────────── */
+// Radioplayer change de station en chargeant la console de l'autre station.
+// On fait pareil : c'est la seule voie qui garde le logo, le nom, le titre en
+// cours et les statistiques d'écoute alignés sur ce qui sort des haut-parleurs.
+function paintStations(){
+  el('stations').innerHTML = (D.stations||[]).map(function(s, i){
+    return '<button class="st'+(s.actuelle?' on':'')+((!s.actuelle && !s.console)?' todo':'')+'" '+
+           'data-st="'+i+'" role="tab" aria-selected="'+(!!s.actuelle)+'">'+esc(s.court)+'</button>';
+  }).join('');
+}
+var hintTimer = null;
+function hint(msg){
+  var h = el('stHint');
+  h.textContent = msg; h.hidden = false;
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(function(){ h.hidden = true; }, 3200);
+}
+function switchStation(s){
+  if(s.actuelle) return;
+  if(!s.console){
+    hint(s.alerte || ('Console ' + s.nom + ' — URL à renseigner'));
+    log('→ changement de station impossible', {station:s.nom, raison:s.alerte||'console inconnue'});
+    return;
+  }
+  log('→ changement de station', {station:s.nom, rpId:s.rpId, url:s.console});
+  send('__RequestStationChange', {station:s.code, rpId:s.rpId, url:s.console});
+  // Navigation de la fenêtre du dessus : autorisée depuis une iframe tierce
+  // tant qu'elle découle d'un clic et que l'iframe n'est pas en sandbox.
+  try{ top.location.href = s.console; }catch(e){ log('→ navigation refusée', {erreur:String(e)}); }
+}
+
+function paintHead(){
+  var r = rows[curIdx];
+  el('hTitle').textContent = r.show || r.ep || D.station.nom;
+  el('hSub').textContent   = (r.ep && r.ep !== r.show) ? r.ep : (r.pres || D.station.nom);
+  el('pillLabel').textContent = 'En direct · ' + r.t;
+  el('bigPlay').innerHTML = playingLive ? PAUSE_L : PLAY_L;
+  el('bigPlay').setAttribute('aria-label', playingLive ? 'Mettre en pause' : 'Écouter le direct');
+  el('head').classList.toggle('on', playingLive);
+}
+el('bigPlay').addEventListener('click', function(){
+  if(playingLive){ send('RequestPause'); }
+  else { send('RequestSkipToLive'); send('RequestPlay'); }
+});
+
+/* ─── carrousel programme ─────────────────────────────── */
+function paintRail(){
+  el('rail').innerHTML = rows.map(function(r, i){
+    var cls = 'card' + (i<curIdx?' past':'') + (i===curIdx?' now':'');
+    var over = '';
+    if(r.state === 'direct'){
+      over = '<span class="tag direct"><span class="d"></span>Direct</span>';
+    } else if(r.state === 'ecoutable'){
+      var on = playingEp === r.id;
+      over = '<button class="card-play'+(on?' on':'')+'" data-ep="'+esc(r.id)+'" '+
+             'aria-label="Réécouter">'+(on?PAUSE_M:PLAY_M)+'</button>';
+    }
+    // L'absence de podcast ne mérite pas une pastille sur l'image : elle se lit
+    // à l'absence de bouton, et se dit en clair sous le titre.
+    // Le créneau en cours porte un repère lisible quelle que soit la vignette —
+    // l'anneau rouge disparaît sur une image rouge.
+    if(i === curIdx && r.state !== 'direct'){
+      over = '<span class="tag antenne"><span class="d"></span>À l’antenne</span>' + over;
+    }
+    var sub = (r.ep && r.ep !== r.show) ? r.ep : (r.pres || '');
+    var note = r.state === 'sans' ? '<div class="card-note">pas de podcast</div>' : '';
+    return '<div class="'+cls+'" id="c'+i+'">'+
+      '<div class="card-img">'+visual(r.img, r.show||r.ep)+over+'</div>'+
+      '<div class="card-t">'+esc(r.t)+(r.dur?' · '+esc(mins(r.dur)):'')+'</div>'+
+      '<div class="card-name">'+esc(r.show||r.ep||'—')+'</div>'+
+      (sub?'<div class="card-ep">'+esc(sub)+'</div>':'')+
+      note+
+    '</div>';
+  }).join('');
+}
+
+/* ─── carrousel podcasts ──────────────────────────────── */
+function paintPods(){
+  el('pods').innerHTML = D.series.map(function(s, i){
+    return '<div class="pod'+(i===podIdx?' active':'')+'" data-pod="'+i+'">'+
+      '<div class="pod-img">'+visual(s.img, s.t)+
+        '<div class="pod-veil"><span class="pod-name">'+esc(s.t)+'</span>'+
+        '<span class="pod-n">'+s.eps.length+' épisode'+(s.eps.length>1?'s':'')+'</span></div>'+
+      '</div></div>';
+  }).join('');
+  el('dots').innerHTML = D.series.map(function(_, i){
+    return '<b data-dot="'+i+'" style="width:'+(i===podIdx?15:5)+'px;background:'+
+           (i===podIdx?'var(--rcf)':'#D8DAE0')+'"></b>';
+  }).join('');
+  paintEps();
+}
+function paintEps(){
+  var host = el('epsHost');
+  if(openPod === null){ host.innerHTML=''; return; }
+  var s = D.series[openPod];
+  host.innerHTML = '<div class="eps"><div class="eps-h">'+
+    '<span>Derniers épisodes</span><b>'+esc(s.t)+'</b></div>'+
+    s.eps.map(function(e, i){
+      var on = playingEp === e.id;
+      return '<button class="ep'+(on?' on':'')+'" data-ep="'+esc(e.id)+'">'+
+        '<span class="ep-btn">'+(on?PAUSE_S:PLAY_S)+'</span>'+
+        '<span class="ep-txt"><span class="ep-t">'+esc(e.t)+'</span>'+
+        '<span class="ep-m">'+esc(fmtDay(e.day))+' · '+esc(mins(e.d))+'</span></span>'+
+        (i===0?'<span class="nouveau">Nouveau</span>':'')+
+      '</button>';
+    }).join('')+'</div>';
+}
+function centerPod(i){
+  var c = el('pods'), it = c.children[i];
+  if(it) c.scrollTo({left: it.offsetLeft - c.clientWidth/2 + it.clientWidth/2, behavior:'smooth'});
+}
+
+/* ─── lecture à la demande ────────────────────────────── */
+// Aucun message postMessage ne permet de charger un épisode :
+// la console doit être rechargée avec ?rpOdId=…
+function playEpisode(id){
+  if(playingEp === id){ send('RequestPause'); playingEp = null; }
+  else {
+    playingEp = id; playingLive = false;
+    var url = '?rpOdId='+encodeURIComponent(id)+'&rpSt='+RPID+'&rpSrp=index';
+    log('→ navigation console', {url:url, episode:id});
+    send('__RequestOnDemand', {odId:id, stationId:RPID, url:url});
+  }
+  paintHead(); paintRail(); paintEps();
+}
+
+/* ─── interactions ────────────────────────────────────── */
+document.addEventListener('click', function(ev){
+  var s = ev.target.closest('[data-st]');
+  if(s){ switchStation(D.stations[+s.getAttribute('data-st')]); return; }
+  var b = ev.target.closest('[data-ep]');
+  if(b){ ev.preventDefault(); ev.stopPropagation(); playEpisode(b.getAttribute('data-ep')); return; }
+  var d = ev.target.closest('[data-dot]');
+  if(d){ podIdx = +d.getAttribute('data-dot'); paintPods(); centerPod(podIdx); stopAuto(); return; }
+  var p = ev.target.closest('[data-pod]');
+  if(p){
+    var i = +p.getAttribute('data-pod');
+    openPod = (podIdx === i && openPod === i) ? null : i;
+    podIdx = i; paintPods(); centerPod(i); stopAuto();
+    return;
+  }
+});
+// Avance automatique, mais elle s'arrête dès que l'auditeur touche à quelque chose :
+// une cible qui bouge sous le doigt est un piège, pas une animation.
+function stopAuto(){ if(podTimer){ clearInterval(podTimer); podTimer = null; } }
+podTimer = setInterval(function(){
+  if(openPod !== null) return;
+  podIdx = (podIdx + 1) % D.series.length;
+  paintPods(); centerPod(podIdx);
+}, 5200);
+['pointerdown','wheel','touchstart'].forEach(function(t){
+  el('pods').addEventListener(t, stopAuto, {passive:true});
+});
+
+/* ─── init ────────────────────────────────────────────── */
+el('footCount').textContent = rows.filter(function(r){return r.state==='ecoutable'}).length + '/' + rows.length;
+el('footDate').textContent  = D.jour + ' ' + fmtDay(D.date);
+el('secDay').textContent    = 'Aujourd’hui';
+
+paintStations(); paintHead(); paintRail(); paintPods();
+
+// Le créneau en cours est amené au centre ; le passé reste accessible à gauche.
+requestAnimationFrame(function(){
+  var c = el('rail'), it = el('c'+curIdx);
+  if(it) c.scrollLeft = it.offsetLeft - c.clientWidth/2 + it.clientWidth/2;
+});
+
+send('__IframeReady', {station:D.station.code, rpId:RPID});
+})();
+</script>
+</body>
+</html>

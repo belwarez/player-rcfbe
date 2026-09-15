@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RCF Liège — console de test</title>
+
+<!-- Scripts du lecteur Radioplayer. Doivent être dans le <head>, tout en haut. -->
+<script type="module" src="https://assets.player.radio/latest/radioplayer.js"></script>
+<script nomodule defer src="https://assets.player.radio/latest/radioplayer.legacy.js"></script>
+<link rel="stylesheet" href="https://assets.player.radio/latest/radioplayer.css">
+
+<!-- Préchargements recommandés par la documentation. -->
+<link rel="preload" as="font" crossorigin type="font/woff2"
+      href="https://assets.player.radio/latest/assets/sintony-v7-latin-700.woff2">
+<link rel="preconnect" href="https://mapi-prod.radioplayer.co.uk/">
+<link rel="preconnect" href="https://np.maradio.be/" crossorigin="use-credentials">
+<link rel="preconnect" href="https://search.maradio.be/" crossorigin="use-credentials">
+
+<style>
+  /* Ces propriétés sont exigées par la documentation Radioplayer. */
+  [data-widget-radioplayer]{
+    width:100vw;height:100vh;left:0;top:0;position:absolute;
+  }
+  html,body{margin:0;background:#fff}
+  /* Les quatre seules variables CSS que le lecteur expose. */
+  :root{
+    --radioplayer-theme-colour:#E2001A;
+    --radioplayer-background-colour:#FFFFFF;
+    --radioplayer-foreground-colour:#111827;
+    --radioplayer-widget-background:#F8F9FA;
+  }
+</style>
+</head>
+<body>
+
+<div data-widget-radioplayer>
+  <script type="application/json" id="rp-config">{}</script>
+</div>
+
+<script>
+/* La configuration est écrite ici plutôt qu'en dur, pour une seule raison :
+   iframeSrc doit être une URL absolue, et l'adresse de base change selon
+   l'hébergement (github.io/<dépôt>/, un domaine propre, rcf.be…).
+   Ce script classique s'exécute avant le module radioplayer.js, qui est différé. */
+(function(){
+  var base = location.href.replace(/[^/]*$/, '');       // dossier de cette page
+  var config = {
+    /* — Station — */
+    "id": "1013",                                        // RCF Liège (rpId vérifié)
+
+    /* — Points d'accès — repris de la console RCF Liège en production.
+         Ce sont ceux qui répondent réellement ; voir fiche 10. — */
+    "mapi": "https://mapi-prod.radioplayer.co.uk/api/be/",
+    "cm":   "https://cookie.maradio.be/cm/",
+    "al":   "https://static.maradio.be/v4/analytics.html",
+    "np":   "https://np.maradio.be/qp/",
+    "qp":   "https://search.maradio.be/qp/",
+
+    /* — Flux de repli, en https (celui de Bruxelles est en http en production,
+         ce qui casse l'audio sur une page sécurisée) — */
+    "fallback": [{ "url": "https://rcf.streamakaci.com/rcfliege.mp3", "format": "mp3" }],
+
+    /* — Habillage — */
+    "theme": "LIGHT",
+    "themeColour": "#E2001A",
+    "lang": "fr",
+    "localeRootUrl": "https://assets.player.radio/latest",
+
+    /* — L'iframe remplace les trois widgets — */
+    "widgets": ["IF"],
+    "iframeSrc": base + "iframe/",
+    "enableIframeMessaging": true
+  };
+  document.getElementById('rp-config').textContent = JSON.stringify(config, null, 2);
+
+  /* Relais : l'iframe demande des choses que le lecteur ne sait pas faire
+     (charger un épisode, changer de station). Les deux passent par un
+     rechargement de cette page — c'est la seule voie qui existe. */
+  window.addEventListener('message', function(e){
+    var m = e.data;
+    if(!m || typeof m !== 'object') return;
+    if(m.type === '__RequestOnDemand' && m.odId){
+      location.href = location.pathname + '?rpOdId=' + encodeURIComponent(m.odId) +
+                      '&rpSt=' + encodeURIComponent(m.stationId) + '&rpSrp=index';
+    }
+    if(m.type === '__RequestStationChange' && m.url){
+      location.href = m.url;
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
