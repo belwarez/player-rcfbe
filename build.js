@@ -29,8 +29,54 @@ const logo = fs.existsSync(path.join(src, 'logo-liege.txt'))
 const logoSvg = fs.existsSync(path.join(src, 'logo-rcf.svg'))
   ? read(path.join(src, 'logo-rcf.svg')).trim() : '';
 
+// Les podcasts par catégorie vivent dans leur propre fichier : ils viennent
+// d'une autre route que la grille et se rafraîchissent à un autre rythme.
+const pods = JSON.parse(read(path.join(src, 'podcasts-liege.json')));
+const dataObj = JSON.parse(data);
+dataObj.categories = pods.categories;
+delete dataObj.series;
+
+// Les émissions présentes à l'antenne mais absentes du catalogue liégeois —
+// surtout des productions de RCF France — viennent de la grille, seule source
+// qui porte leur audio. On les verse dans la catégorie que dit leur alias.
+const grille = JSON.parse(read(path.join(src, 'podcasts-grille.json')));
+const norm = (t) => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                     .replace(/[^a-z0-9]/g, '');
+for (const s of grille.series) {
+  const cat = dataObj.categories.find((c) => c.slug === s.cat);
+  if (!cat) { console.log('  ⚠ catégorie inconnue : ' + s.cat + ' (' + s.t + ')'); continue; }
+  const dejaLa = cat.series.find((x) => norm(x.t) === norm(s.t));
+  // Si l'émission est déjà là avec plus d'épisodes, on garde la version profonde.
+  if (dejaLa) {
+    if (s.eps.length > dejaLa.eps.length) Object.assign(dejaLa, s);
+    continue;
+  }
+  cat.series.push({ t: s.t, img: s.img, pres: s.pres, national: s.national, eps: s.eps });
+}
+console.log('  ' + grille.series.length + ' émissions de la grille versées dans les catégories');
+
+// Brandon Grotesque Bold, sous-ensemble capitales. RCF détient une licence web
+// pour cette police ; elle ne sert qu'à la titraille, jamais au texte courant.
+// Le fichier n'est pas versionné (voir .gitignore) mais il est intégré en base64
+// dans la page fabriquée — donc présent dans docs/. Pour une construction qui
+// n'embarque rien, lancer : node build.js --sans-police
+const sansPolice = process.argv.includes('--sans-police');
+const brandon = path.join(src, 'fonts', 'brandon-bold.woff2');
+let fontFace = '';
+if (!sansPolice && fs.existsSync(brandon)) {
+  fontFace =
+    "@font-face{font-family:'Brandon Grotesque';font-weight:700;font-style:normal;" +
+    "font-display:swap;src:url('data:font/woff2;base64," +
+    fs.readFileSync(brandon).toString('base64') + "') format('woff2')}";
+  console.log('  Brandon Grotesque Bold intégrée (' +
+              (fs.statSync(brandon).size / 1024).toFixed(1) + ' Ko)');
+} else {
+  console.log('  Brandon Grotesque absente — la titraille retombe sur Outfit');
+}
+
 const iframeHtml = read(path.join(src, 'iframe.html'))
-  .replace('/*__DATA__*/', data)
+  .replace('/*__FONTS__*/', fontFace)
+  .replace('/*__DATA__*/', JSON.stringify(dataObj))
   .replace('/*__LOGO__*/', logo)
   .replace('/*__LOGO_SVG__*/', logoSvg);
 

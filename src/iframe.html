@@ -6,14 +6,27 @@
 <title>RCF Liège</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
+/*__FONTS__*/
 :root{
   --rcf:#E2001A; --rcf-dark:#B30015;
   --bg:#FFFFFF; --surface:#F8F9FA; --line:#E5E7EB;
   --ink:#111827; --muted:#6B7280; --faint:#9CA3AF;
-  --fd:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --fb:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+  /* Deux rôles, pas un. Brandon Grotesque ne sert qu'à la TITRAILLE, en bold
+     et en capitales — c'est l'usage défini par la charte RCF. Tout le reste,
+     y compris les noms d'émissions et les titres d'épisodes, est du texte
+     courant et revient à Open Sans. Si la police n'est pas embarquée, la
+     titraille retombe sur Outfit sans que rien d'autre ne bouge. */
+  --ft:'Brandon Grotesque','Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --fb:'Open Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --fd:var(--fb);
+}
+/* Titraille : bold, capitales, un peu d'interlettrage — Brandon Grotesque
+   n'est pas dessinée pour de longues chaînes en bas de casse. */
+.titraille{
+  font-family:var(--ft);font-weight:700;
+  text-transform:uppercase;letter-spacing:.055em;
 }
 *{box-sizing:border-box}
 html{height:100%}
@@ -31,7 +44,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .head{
   background:var(--rcf);color:#fff;
   display:flex;flex-direction:column;align-items:center;
-  padding:18px 20px 30px;
+  padding:20px 22px 34px;
   border-radius:0 0 38px 38px;
   box-shadow:0 10px 26px rgba(226,0,26,.20);
   position:relative;z-index:2;
@@ -46,8 +59,8 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 }
 .st{
   flex:1;min-width:0;padding:6px 4px;border-radius:999px;text-align:center;white-space:nowrap;
-  font-family:var(--fd);font-weight:700;font-size:10.5px;letter-spacing:.005em;
-  color:rgba(255,255,255,.72);
+  font-family:var(--ft);font-weight:700;font-size:10.5px;
+  text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.72);
   transition:background .25s,color .25s,box-shadow .25s;
 }
 .st:hover{color:#fff;background:rgba(255,255,255,.11)}
@@ -61,8 +74,9 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 }
 
 /* Le logo est détouré : blanc sur le rouge, sans cadre ni tuile. */
+/* Le logo respire : une marge généreuse tout autour, il ne touche rien. */
 .logo{
-  width:150px;flex:0 0 auto;margin-bottom:18px;
+  width:140px;flex:0 0 auto;margin:6px 0 26px;padding:0 10px;
   display:flex;align-items:center;justify-content:center;
 }
 .logo img,.logo svg{width:100%;height:auto;display:block}
@@ -90,7 +104,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   padding:5px 11px;border-radius:999px;margin-bottom:14px;
 }
 .pill-label{
-  font-family:var(--fd);font-weight:700;font-size:10px;
+  font-family:var(--ft);font-weight:700;font-size:10.5px;
   letter-spacing:.14em;text-transform:uppercase;
 }
 .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.45)}
@@ -132,11 +146,11 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   padding:0 20px;margin:22px 0 13px;
 }
 .sec-head h2{
-  font-family:var(--fd);font-weight:700;font-size:17px;
-  letter-spacing:-.015em;margin:0;
+  font-family:var(--ft);font-weight:700;font-size:16px;
+  text-transform:uppercase;letter-spacing:.05em;margin:0;
 }
 .sec-tag{
-  font-family:var(--fd);font-weight:700;font-size:10px;
+  font-family:var(--ft);font-weight:700;font-size:10px;
   letter-spacing:.10em;text-transform:uppercase;color:var(--faint);
 }
 .sec-tag.red{color:var(--rcf)}
@@ -173,7 +187,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .tag{
   position:absolute;left:7px;bottom:7px;
   display:inline-flex;align-items:center;gap:4px;
-  font-family:var(--fd);font-weight:700;font-size:9px;
+  font-family:var(--ft);font-weight:700;font-size:9px;
   letter-spacing:.08em;text-transform:uppercase;
   padding:3px 6px;border-radius:5px;
   box-shadow:0 2px 6px rgba(0,0,0,.22);
@@ -211,23 +225,59 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 }
 
 /* ═══ 4. CARROUSEL PODCASTS ═══════════════════════════════ */
+/* Chaque ligne porte la couleur de sa catégorie dans --c (la teinte de la
+   charte, pour les aplats et les traits) et --cd (la même assombrie jusqu'à
+   4,5:1 sur blanc, pour tout ce qui porte du texte). Les deux sont posées en
+   style= sur .cat ; le rouge reste la couleur de la station, jamais d'une
+   rubrique. Défaut : rouge, si une catégorie arrivait sans couleur. */
+.cat{--c:var(--rcf);--cd:var(--rcf);position:relative;margin-bottom:6px}
+.cat-h{
+  display:flex;align-items:center;gap:9px;padding:0 20px;margin:16px 0 9px;
+}
+.cat-bar{
+  width:4px;height:14px;border-radius:2px;background:var(--c);flex:0 0 auto;
+}
+.cat-h b{
+  font-family:var(--ft);font-weight:700;font-size:12px;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--ink);
+}
+.cat-h i{
+  font-style:normal;font-size:10.5px;color:var(--faint);font-weight:600;
+}
+/* La ligne repose sur un aplat très descendu de sa couleur. C'est lui le
+   contenant : il englobe le titre, le carrousel et le panneau d'épisodes, et
+   grandit avec eux quand une émission s'ouvre. Rien d'autre n'a donc besoin
+   d'un cadre à l'intérieur.
+   L'aplat est tiré de --cd et non de --c : les teintes de charte n'ont pas la
+   même clarté, et à 7,5 % sur blanc le rose disparaissait quand le rouge se
+   voyait bien. Les variantes assombries sont toutes à ~4,5:1, donc leurs voiles
+   pèsent le même poids. L'opacité passe par un calque plutôt que par
+   color-mix : plus portable. */
+.cat{padding:2px 0 10px;margin-bottom:10px}
+.cat::before{
+  content:'';position:absolute;inset:0;background:var(--cd);opacity:.075;
+  border-radius:18px;pointer-events:none;
+}
+.cat-h{margin-top:12px}
+/* ?sans-bandes=1 retire l'aplat, pour comparer. */
+[data-bandes="0"] .cat{padding:0;margin-bottom:6px}
+[data-bandes="0"] .cat::before{content:none}
+[data-bandes="0"] .cat-h{margin-top:16px}
 .pod-wrap{position:relative}
-.fade{position:absolute;top:0;bottom:0;width:26px;z-index:3;pointer-events:none}
-.fade.l{left:0;background:linear-gradient(90deg,#fff,rgba(255,255,255,0))}
-.fade.r{right:0;background:linear-gradient(270deg,#fff,rgba(255,255,255,0))}
 .pods{
-  display:flex;gap:11px;overflow-x:auto;padding:4px 15px 8px;
+  display:flex;gap:12px;overflow-x:auto;padding:2px 20px 8px;
   scroll-snap-type:x mandatory;
 }
 .pod{flex:0 0 auto;width:156px;scroll-snap-align:start;cursor:pointer}
 .pod-img{
   position:relative;width:100%;aspect-ratio:16/9;border-radius:13px;overflow:hidden;
-  background:linear-gradient(140deg,var(--rcf),var(--rcf-dark));
+  background:linear-gradient(140deg,var(--c),var(--cd));
   display:grid;place-items:center;padding:10px;
   box-shadow:0 2px 9px rgba(0,0,0,.11);
-  opacity:.62;transition:opacity .3s,box-shadow .3s;
+  transition:box-shadow .25s,transform .25s;
 }
-.pod.active .pod-img{opacity:1;box-shadow:0 5px 18px rgba(0,0,0,.17)}
+.pod:hover .pod-img{box-shadow:0 5px 18px rgba(0,0,0,.17);transform:translateY(-2px)}
+.pod.active .pod-img{box-shadow:0 0 0 3px var(--c),0 5px 18px rgba(0,0,0,.20)}
 .pod-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 /* Pas de titre incrusté : les visuels RCF portent déjà le nom de l'émission.
    Le titre n'apparaît qu'en secours, quand l'image ne se charge pas. */
@@ -240,13 +290,13 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   font-size:10.5px;color:var(--muted);margin-top:6px;font-weight:600;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-.dots{display:flex;justify-content:center;gap:5px;padding:2px 0 6px}
-.dots b{height:5px;border-radius:3px;background:#D8DAE0;transition:all .3s;cursor:pointer;display:block}
 
 /* ═══ 5. PANNEAU DES ÉPISODES ═════════════════════════════ */
 .eps{
-  margin:6px 16px 0;border:1px solid var(--line);border-radius:16px;overflow:hidden;
-  background:var(--surface);
+  margin:4px 20px 6px;max-height:296px;overflow-y:auto;border-radius:14px;overflow:hidden;
+  /* Pas de cadre : le panneau est posé en blanc sur l'aplat de la ligne, qui
+     fait déjà office de contenant. C'est le fond clair qui le détache. */
+  background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.07);
   animation:drop .22s ease-out both;
 }
 @keyframes drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
@@ -255,26 +305,26 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   padding:9px 13px;border-bottom:1px solid var(--line);
 }
 .eps-h span:first-child{
-  font-family:var(--fd);font-weight:700;font-size:10px;
+  font-family:var(--ft);font-weight:700;font-size:10px;
   letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
 }
 .eps-h b{
-  font-family:var(--fd);font-weight:700;font-size:10.5px;color:var(--rcf);
+  font-family:var(--fd);font-weight:700;font-size:10.5px;color:var(--cd);
   max-width:56%;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .ep{
   display:flex;align-items:center;gap:11px;width:100%;
-  padding:10px 13px;border-bottom:1px solid rgba(229,231,235,.75);
+  padding:10px 13px;border-bottom:1px solid rgba(229,231,235,.9);
   transition:background .15s;
 }
 .ep:last-child{border-bottom:0}
-.ep:hover{background:#fff}
+.ep:hover{background:var(--surface)}
 .ep-btn{
   width:28px;height:28px;border-radius:50%;flex:0 0 auto;
   background:#E3E5E9;color:#fff;display:grid;place-items:center;transition:background .2s;
 }
-.ep.on .ep-btn,.ep:hover .ep-btn{background:var(--rcf)}
-.ep.on{background:#fff}
+.ep.on .ep-btn,.ep:hover .ep-btn{background:var(--cd)}
+.ep.on{background:var(--surface)}
 .ep-txt{flex:1;min-width:0}
 .ep-t{
   font-weight:700;font-size:12px;color:#1F2937;line-height:1.3;
@@ -283,27 +333,20 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 }
 .ep-m{font-size:10.5px;color:var(--faint);margin-top:2px}
 .nouveau{
-  font-family:var(--fd);font-weight:700;font-size:8.5px;letter-spacing:.09em;
-  text-transform:uppercase;background:var(--rcf);color:#fff;
+  font-family:var(--ft);font-weight:700;font-size:8.5px;letter-spacing:.09em;
+  text-transform:uppercase;background:var(--cd);color:#fff;
   padding:2.5px 5px;border-radius:4px;flex:0 0 auto;
 }
 
-/* ═══ 6. PIED ═════════════════════════════════════════════ */
-.foot{
-  display:flex;justify-content:space-between;gap:10px;
-  padding:14px 20px 18px;font-size:10px;color:var(--faint);
-}
-.foot b{font-family:var(--fd);font-weight:700;color:var(--muted)}
-
 /* ═══ 7. VARIANTE LARGE — widgets:["IF"] ══════════════════ */
 @media (min-width:620px){
-  .head{padding:14px 28px 22px;border-radius:0 0 34px 34px;align-items:stretch}
-  .head-main{flex-direction:row;align-items:center;gap:22px}
+  .head{padding:18px 34px 30px;border-radius:0 0 34px 34px;align-items:stretch}
+  .head-main{flex-direction:row;align-items:center;gap:8px}
   .stations{width:auto;max-width:none;margin:0 0 12px auto}
   .st{flex:0 0 auto;padding:6px 16px;font-size:11.5px}
   .st-hint{margin:-6px 0 12px auto;align-self:flex-end}
-  .logo{margin-bottom:0;width:158px}
-  .head-right{flex-direction:row;align-items:center;gap:20px}
+  .logo{margin:0;width:170px;padding:0 26px 0 12px}
+  .head-right{flex-direction:row;align-items:center;gap:22px}
   .banner{width:210px;margin-bottom:0}
   .head-mid{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start}
   .pill{margin-bottom:10px}
@@ -359,17 +402,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   <h2 class="fd">À réécouter</h2>
   <span class="sec-tag">Podcasts</span>
 </div>
-<div class="pod-wrap">
-  <div class="fade l"></div><div class="fade r"></div>
-  <div class="pods scroll-hidden" id="pods"></div>
-  <div class="dots" id="dots"></div>
-</div>
-<div id="epsHost"></div>
-
-<div class="foot">
-  <span><b id="footCount">—</b> créneaux réécoutables</span>
-  <span id="footDate"></span>
-</div>
+<div id="cats"></div>
 
 <script id="rcf-data" type="application/json">/*__DATA__*/</script>
 <script id="rcf-logo" type="text/plain">/*__LOGO__*/</script>
@@ -451,7 +484,7 @@ D.series = (D.series || []).slice().sort(function(x, y){
 });
 
 /* ─── état ────────────────────────────────────────────── */
-var playingLive=false, playingEp=null, podIdx=0, openPod=null, podTimer=null;
+var playingLive=false, playingEp=null;
 
 /* ─── dialogue avec la console Radioplayer ────────────── */
 // Le son appartient au player Radioplayer. Aucune balise <audio> ici.
@@ -469,7 +502,7 @@ window.addEventListener('message', function(e){
   var m=e.data; if(!m||typeof m!=='object'||!m.type) return;
   switch(m.type){
     case 'play':  playingLive=true;  paintHead(); break;
-    case 'pause': playingLive=false; playingEp=null; paintHead(); paintRail(); paintPods(); break;
+    case 'pause': playingLive=false; playingEp=null; paintHead(); paintRail(); repaintEps(); break;
     case 'time':
       // payload : PlaybackStatus { paused, live, time, volume, … }
       if(m.payload && typeof m.payload.paused === 'boolean' && m.payload.paused === playingLive){
@@ -589,24 +622,40 @@ function paintRail(){
   }).join('');
 }
 
-/* ─── carrousel podcasts ──────────────────────────────── */
-function paintPods(){
-  el('pods').innerHTML = D.series.map(function(s, i){
-    return '<div class="pod'+(i===podIdx?' active':'')+'" data-pod="'+i+'">'+
-      '<div class="pod-img">'+visualTitre(s.img, s.t)+'</div>'+
-      '<div class="pod-meta">'+s.eps.length+' épisode'+(s.eps.length>1?'s':'')+'</div>'+
+/* ─── carrousels de podcasts, une ligne par catégorie ─── */
+// Chaque catégorie a sa propre ligne et son propre panneau d'épisodes : ouvrir
+// une émission de « Culture » ne referme pas celle d'« Actualité ».
+var ouvert = {};   // slug de catégorie → indice de série ouverte
+
+function paintCats(){
+  el('cats').innerHTML = (D.categories || []).map(function(c, ci){
+    var tuiles = c.series.map(function(s, si){
+      return '<div class="pod'+(ouvert[c.slug] === si ? ' active' : '')+'" '+
+             'data-cat="'+ci+'" data-serie="'+si+'">'+
+        '<div class="pod-img">'+visualTitre(s.img, s.t)+'</div>'+
+        '<div class="pod-meta">'+esc(s.pres || '')+'</div>'+
+      '</div>';
+    }).join('');
+    // La couleur de la catégorie descend par deux variables CSS : tout ce qui
+    // est en dessous s'y branche sans connaître la catégorie.
+    var style = c.couleur
+      ? ' style="--c:'+esc(c.couleur)+';--cd:'+esc(c.couleurTexte || c.couleur)+'"'
+      : '';
+    return '<div class="cat"'+style+'>'+
+      '<div class="cat-h"><span class="cat-bar"></span><b>'+esc(c.nom)+'</b></div>'+
+      '<div class="pods scroll-hidden">'+tuiles+'</div>'+
+      '<div id="eps-'+ci+'"></div>'+
     '</div>';
   }).join('');
-  el('dots').innerHTML = D.series.map(function(_, i){
-    return '<b data-dot="'+i+'" style="width:'+(i===podIdx?15:5)+'px;background:'+
-           (i===podIdx?'var(--rcf)':'#D8DAE0')+'"></b>';
-  }).join('');
-  paintEps();
+  (D.categories || []).forEach(function(c, ci){ paintEps(c, ci); });
 }
-function paintEps(){
-  var host = el('epsHost');
-  if(openPod === null){ host.innerHTML=''; return; }
-  var s = D.series[openPod];
+
+function paintEps(c, ci){
+  var host = el('eps-' + ci);
+  if(!host) return;
+  var si = ouvert[c.slug];
+  if(si === undefined || !c.series[si]){ host.innerHTML = ''; return; }
+  var s = c.series[si];
   host.innerHTML = '<div class="eps"><div class="eps-h">'+
     '<span>Derniers épisodes</span><b>'+esc(s.t)+'</b></div>'+
     s.eps.map(function(e, i){
@@ -619,10 +668,8 @@ function paintEps(){
       '</button>';
     }).join('')+'</div>';
 }
-function centerPod(i){
-  var c = el('pods'), it = c.children[i];
-  if(it) c.scrollTo({left: it.offsetLeft - c.clientWidth/2 + it.clientWidth/2, behavior:'smooth'});
-}
+
+function repaintEps(){ (D.categories || []).forEach(function(c, ci){ paintEps(c, ci); }); }
 
 /* ─── lecture à la demande ────────────────────────────── */
 // Aucun message postMessage ne permet de charger un épisode :
@@ -635,7 +682,7 @@ function playEpisode(id){
     log('→ navigation console', {url:url, episode:id});
     send('__RequestOnDemand', {odId:id, stationId:RPID, url:url});
   }
-  paintHead(); paintRail(); paintEps();
+  paintHead(); paintRail(); repaintEps();
 }
 
 /* ─── interactions ────────────────────────────────────── */
@@ -644,34 +691,26 @@ document.addEventListener('click', function(ev){
   if(s){ switchStation(D.stations[+s.getAttribute('data-st')]); return; }
   var b = ev.target.closest('[data-ep]');
   if(b){ ev.preventDefault(); ev.stopPropagation(); playEpisode(b.getAttribute('data-ep')); return; }
-  var d = ev.target.closest('[data-dot]');
-  if(d){ podIdx = +d.getAttribute('data-dot'); paintPods(); centerPod(podIdx); stopAuto(); return; }
-  var p = ev.target.closest('[data-pod]');
-  if(p){
-    var i = +p.getAttribute('data-pod');
-    openPod = (podIdx === i && openPod === i) ? null : i;
-    podIdx = i; paintPods(); centerPod(i); stopAuto();
+  var t = ev.target.closest('[data-serie]');
+  if(t){
+    var ci = +t.getAttribute('data-cat'), si = +t.getAttribute('data-serie');
+    var c = D.categories[ci];
+    ouvert[c.slug] = (ouvert[c.slug] === si) ? undefined : si;
+    paintCats();
     return;
   }
 });
-// Avance automatique, mais elle s'arrête dès que l'auditeur touche à quelque chose :
-// une cible qui bouge sous le doigt est un piège, pas une animation.
-function stopAuto(){ if(podTimer){ clearInterval(podTimer); podTimer = null; } }
-podTimer = setInterval(function(){
-  if(openPod !== null) return;
-  podIdx = (podIdx + 1) % D.series.length;
-  paintPods(); centerPod(podIdx);
-}, 5200);
-['pointerdown','wheel','touchstart'].forEach(function(t){
-  el('pods').addEventListener(t, stopAuto, {passive:true});
-});
+function tab(){}
 
 /* ─── init ────────────────────────────────────────────── */
-el('footCount').textContent = rows.filter(function(r){return r.state==='ecoutable'}).length + '/' + rows.length;
-el('footDate').textContent  = D.jour + ' ' + fmtDay(D.date);
 el('secDay').textContent    = 'Aujourd’hui';
 
-paintLogo(); paintStations(); paintHead(); paintRail(); paintPods();
+/* Chaque catégorie est une bande : un aplat très descendu de sa couleur, qui
+   contient le titre, le carrousel et le panneau d'épisodes. ?sans-bandes=1
+   retire l'aplat, pour comparer. */
+if(/[?&]sans-bandes=1/.test(location.search)) el('cats').setAttribute('data-bandes','0');
+
+paintLogo(); paintStations(); paintHead(); paintRail(); paintCats();
 
 // Le créneau en cours est amené au centre ; le passé reste accessible à gauche.
 requestAnimationFrame(function(){

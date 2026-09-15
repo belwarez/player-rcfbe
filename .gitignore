@@ -16,3 +16,8 @@ node_modules/
 # C'est le dossier que GitHub Pages publie — il doit être versionné.
 # Il est fabriqué par « node build.js » : toute modification faite à la main
 # dedans sera écrasée à la prochaine fabrication. Les sources sont dans src/.
+
+# Police sous licence : la source reste hors du dépôt. Attention toutefois :
+# une construction normale l'intègre en base64 dans docs/. Pour un dépôt
+# public, construire avec « node build.js --sans-police ».
+src/fonts/

@@ -52,15 +52,114 @@ Cette page tranche la question en quelques secondes, et l'architecture en dépen
 
 ```
 src/
-  iframe.html           l'habillage — gabarit, sans les données
-  console.html          la console de test (configuration Radioplayer)
-  data-rcf-liege.json   données réelles figées au 14/09/2026
-  logo-b64.txt          le logo RCF Liège en data URI
+  iframe.html            l'habillage — gabarit, sans les données
+  console.html           la console de test (configuration Radioplayer)
+  data-rcf-liege.json    la grille du jour, figée au 14/09/2026
+  podcasts-liege.json    les podcasts par catégorie (rcf.digital, filtré Liège)
+  podcasts-grille.json   les émissions à l'antenne absentes de ce catalogue —
+                         surtout du RCF France, récupérées dans la grille
+  logo-liege.txt         le logo RCF Liège détouré, en data URI
+  logo-rcf.svg           le lettrage RCF générique, vectoriel
+  fonts/                 (facultatif, non versionné) voir « Typographie »
 tools/
-  cors-test.html        le diagnostic
-build.js                fabrique docs/ — aucune dépendance
-docs/                   le résultat, publié tel quel par GitHub Pages
+  cors-test.html         le diagnostic
+build.js                 fabrique docs/ — aucune dépendance
+docs/                    le résultat, publié tel quel par GitHub Pages
 ```
+
+## Typographie
+
+Deux polices, deux rôles — et il ne faut pas les confondre.
+
+**Open Sans** pour tout le texte : noms d'émissions, titres d'épisodes, horaires,
+présentateurs, descriptions. Elle est sous licence libre et vient de Google Fonts.
+
+**Brandon Grotesque Bold, en capitales**, uniquement pour la **titraille** :
+titres de section, noms de catégories, pastille « EN DIRECT », sélecteur de
+stations, pastilles « DIRECT », « À L'ANTENNE », « NOUVEAU », intitulé
+« DERNIERS ÉPISODES ». C'est l'usage défini par la charte RCF.
+
+Le fichier `src/fonts/brandon-bold.woff2` est un **sous-ensemble capitales** :
+84 glyphes sur 234, 10,6 Ko au lieu de 41. Les bas-de-casse en sont absents,
+puisqu'ils ne servent jamais.
+
+### Ce qu'il faut savoir avant de publier
+
+`src/fonts/` n'est pas versionné, mais la police est **intégrée en base64 dans
+`docs/iframe/index.html`**, qui l'est. Sur un dépôt public, ses octets sont donc
+téléchargeables — ce qui reste de la redistribution, même en sous-ensemble.
+
+RCF détient une licence web pour cette police, ce qui couvre sans ambiguïté le
+dépôt final sur `rcf.be`. Pour le brouillon public, deux options :
+
+```bash
+node build.js                 # la police est intégrée
+node build.js --sans-police   # elle ne l'est pas, la titraille passe à Outfit
+```
+
+Utiliser `--sans-police` pour ce qui part sur GitHub et une construction normale
+pour ce qui part sur `rcf.be` évite complètement la question.
+
+### Sur les fichiers d'origine
+
+Les `.woff` du dossier `RCF Archives design/Fonts/brandonG/` sont accompagnés de
+fichiers `-demo.html` : c'est la signature du générateur de Font Squirrel, donc
+des conversions faites depuis la police de bureau. Ils ne déclarent aucune
+licence et portent `fsType 4` (« aperçu et impression »). Si HVD a fourni des
+fichiers web officiels au titre de la licence, ce sont ceux-là qu'il vaut mieux
+utiliser — il suffit de refaire le sous-ensemble à partir d'eux.
+
+## Les couleurs de catégorie
+
+Chaque ligne de podcasts porte la couleur de sa rubrique. Les valeurs sont dans
+`src/podcasts-liege.json`, champ `couleur` de chaque catégorie, avec leur origine
+dans `_couleur`.
+
+| Catégorie | Couleur | Origine |
+|---|---|---|
+| Actualité | `#BC1220` | Rouge profond — charte, P 7620C |
+| Vie Spirituelle | `#EE8FA7` | Rose audacieux — charte, P 183C |
+| Culture | `#EB732B` | Orange héritage — charte, P 172C |
+| Économie et Société | `#28A8B4` | Cyan — hors charte |
+| Écologie et Solidarité | `#748438` | Vert olive — hors charte |
+
+Ces valeurs sont **relevées au pixel sur les visuels de `rcf.fr`** (captures de la
+page Liège, 15/09/2026), pas déduites. Les vignettes d'émission portent le nom de
+leur rubrique en capitales sur un aplat de sa couleur : le système se lit
+directement. Trois des cinq tombent exactement sur les couleurs identitaires de la
+charte de 2014 (écart de 4 à 5 sur 255, soit le bruit de capture) ; le cyan et
+l'olive lui sont postérieurs. Détail de la mesure dans la fiche de connaissance
+`24-la-couleur-des-rubriques.md`.
+
+**Le rouge de l'Actualité.** RCF donne le rouge à l'info, et l'en-tête du player
+est rouge aussi. L'Actualité prend donc le rouge **profond** `#BC1220` — l'extrémité
+sombre du dégradé que RCF utilise déjà sur ces visuels — assez éloigné du `#E2001A`
+de la station pour ne pas être confondu avec un élément de direct. Arbitrage à
+faire confirmer.
+
+Chaque catégorie a aussi un `couleurTexte` : la même teinte assombrie jusqu'à 4,5:1
+sur blanc, pour tout ce qui porte des lettres. Le rose fait exception — assombri à
+saturation pleine il vire au cramoisi et redevient confondable avec le rouge, il
+est donc désaturé de 30 % d'abord.
+
+**Chaque catégorie est une bande.** Un aplat de sa couleur à 7,5 % sur blanc
+contient le titre, le carrousel et le panneau d'épisodes, et grandit avec eux
+quand une émission s'ouvre. C'est l'aplat qui fait contenant : le panneau
+d'épisodes n'a donc pas de cadre, il est simplement posé en blanc dessus.
+
+L'aplat est tiré de `couleurTexte`, pas de `couleur`. Les teintes de charte n'ont
+pas la même clarté : à 7,5 % sur blanc, le rose audacieux était invisible (13 de
+delta) quand le rouge profond se voyait bien (18). Les variantes assombries sont
+toutes à ~4,5:1, donc leurs voiles pèsent le même poids — mesuré entre 13 et 18.
+
+Le reste de la couleur : le trait devant le nom de la catégorie, l'anneau de la
+tuile ouverte, le nom de l'émission dans l'en-tête du panneau, la pastille
+« nouveau », le bouton de lecture au survol, et le fond de secours d'une tuile
+dont le visuel manque.
+
+`docs/iframe/?sans-bandes=1` retire les aplats, pour comparer.
+
+---
 
 Après toute modification dans `src/` ou `tools/` :
 

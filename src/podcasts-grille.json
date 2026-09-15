@@ -1,0 +1,87 @@
+{
+  "_lisezmoi": "Émissions diffusées sur RCF Liège dont les épisodes n'apparaissent PAS dans le catalogue rcf.digital?radio=liege — pour l'essentiel des productions de RCF France. Relevées le 15/09/2026 sur 14 jours de grille (rcf.be/wp-json/rcf/v1/programs), qui porte leur audio et leur identifiant d'épisode. Sur les 126 émissions de la grille, 77 sont absentes du catalogue liégeois et 42 d'entre elles ont un audio ; ne sont retenues ici que celles ayant au moins trois épisodes distincts sur la période. La catégorie est lue dans le premier segment de show_alias. 'd' est une durée en millisecondes.",
+  "series": [
+    {"t":"Le Saint du Jour","cat":"vie-spirituelle","national":true,"img":"i2|2023-08/Le%20saint%20du%20jour%20%282%29.png.webp","pres":"Isabelle Delaunay","eps":[
+      {"id":"60026","t":"Fête de Notre-Dame des Douleurs","d":78360,"day":"2026-09-15"},
+      {"id":"60264","t":"Fête de la Croix glorieuse","d":63360,"day":"2026-09-14"},
+      {"id":"145488","t":"Saint Jean Chrysostome","d":97056,"day":"2026-09-13"},
+      {"id":"145489","t":"Fête du saint Nom de Marie","d":80928,"day":"2026-09-12"},
+      {"id":"144313","t":"Sainte Théodora d'Alexandrie","d":87312,"day":"2026-09-11"},
+      {"id":"144312","t":"Bienheureuse Inès Takeya","d":117936,"day":"2026-09-10"},
+      {"id":"144308","t":"Bienheureux Frédéric Ozanam","d":104040,"day":"2026-09-09"},
+      {"id":"144309","t":"Fête de la nativité de la Vierge Marie","d":106272,"day":"2026-09-08"},
+      {"id":"144301","t":"Saint Cloud","d":76728,"day":"2026-09-07"},
+      {"id":"144299","t":"Bienheureux Bertrand de Garrigues","d":90480,"day":"2026-09-06"}]},
+    {"t":"Prière du matin","cat":"vie-spirituelle","national":true,"img":"i2|2023-08/pri%C3%A8re%20du%20matin%20%282%29.png.webp","pres":"","eps":[
+      {"id":"709489","t":"\"Qu’elle avait mal, qu’elle souffrait, ...\" (Stabat Mater. Jn 19, 25-27)","d":520920,"day":"2026-09-15"},
+      {"id":"709495","t":"\"Il faut que le Fils de l’homme soit élevé\" (Jn 3, 13-17)","d":533352,"day":"2026-09-14"},
+      {"id":"709500","t":"\"Je ne te dis pas de pardonner jusqu’à sept fois, ...\" (Mt 18, 21-35)","d":550560,"day":"2026-09-13"},
+      {"id":"707644","t":"« Pourquoi m’appelez-vous en disant : “Seigneur ! Seigneur !” ...» (Lc 6, 43-49)","d":535968,"day":"2026-09-12"},
+      {"id":"707627","t":"« Un aveugle peut-il guider un autre aveugle ? » (Lc 6, 39-42)","d":543552,"day":"2026-09-11"},
+      {"id":"707584","t":"« Soyez miséricordieux comme votre Père est miséricordieux » (Lc 6, 27-38)","d":539544,"day":"2026-09-10"},
+      {"id":"707574","t":"« Heureux, vous les pauvres. Mais quel malheur pour vous...» (Lc 6, 20-26)","d":539832,"day":"2026-09-09"},
+      {"id":"707270","t":"« L’enfant qui est engendré en elle vient de l’Esprit Saint » (Mt 1, 18-23)","d":542088,"day":"2026-09-08"},
+      {"id":"707251","t":"« Ils observaient Jésus pour voir s’il ferait une guérison...» (Lc 6, 6-11)","d":569784,"day":"2026-09-07"},
+      {"id":"707240","t":"« S’il t’écoute, tu as gagné ton frère » (Mt 18, 15-20)","d":545544,"day":"2026-09-06"}]},
+    {"t":"Prière monastique","cat":"vie-spirituelle","national":true,"img":"i2|2023-08/pri%C3%A8re%20monastique%20%282%29.png.webp","pres":"","eps":[
+      {"id":"76551","t":"La prière des dominicaines de Chalais en Isère","d":711600,"day":"2026-09-15"},
+      {"id":"710945","t":"La prière de la Communauté de Taizé en Saône-et-Loire","d":692688,"day":"2026-09-14"},
+      {"id":"288457","t":"La prière des Carmélites de Mazille en Saône et Loire","d":675768,"day":"2026-09-13"},
+      {"id":"38260","t":"La prière des moines de l'abbaye de Saint Wandrille, en Normandie","d":646176,"day":"2026-09-12"},
+      {"id":"78778","t":"La prière des dominicaines du Puy en Haute-Loire","d":668112,"day":"2026-09-11"},
+      {"id":"95033","t":"La prière des bénédictins d'En Calcat dans le Tarn","d":720192,"day":"2026-09-10"},
+      {"id":"32252","t":"La prière des moines de l'abbaye d'Aiguebelle, dans la Drôme","d":630528,"day":"2026-09-09"},
+      {"id":"319194","t":"La prière des moines et moniales du Bec Hellouin en Normandie","d":751920,"day":"2026-09-08"},
+      {"id":"708817","t":"La prière de la Communauté de Taizé en Saône-et-Loire","d":791136,"day":"2026-09-07"},
+      {"id":"137796","t":"La prière des moines cisterciens de Timadeuc dans le Morbihan","d":682584,"day":"2026-09-06"}]},
+    {"t":"Halte spirituelle","cat":"vie-spirituelle","national":true,"img":"i2|2023-08/Halte%20Spirituelle%20%283%29.png.webp","pres":"Madeleine Vatel","eps":[
+      {"id":"709683","t":"Voyage du Pape : quel programme spirituel ? 2/5 Une parole dans un pays libre","d":720672,"day":"2026-09-15"},
+      {"id":"709650","t":"Voyage du Pape : quel programme spirituel ? 1/5 Un pélerinage pour chacun","d":724752,"day":"2026-09-14"},
+      {"id":"707345","t":"Comment prie le Pape au quotidien ? 5/5 A tout moment, sans règle, sans mesure","d":722280,"day":"2026-09-11"},
+      {"id":"707439","t":"Comment prie le Pape au quotidien ? 4/5 Il n'y a pas de condition idéale","d":718944,"day":"2026-09-10"},
+      {"id":"707342","t":"Comment prie le Pape au quotidien ? 3/5 Progresser dans sa vie spirituelle","d":722256,"day":"2026-09-09"},
+      {"id":"707337","t":"Comment prie le Pape au quotidien ? 2/5 L'extraordinaire dans l'ordinaire","d":720096,"day":"2026-09-08"},
+      {"id":"707334","t":"Comment prie le Pape au quotidien ? 1/5 Un carme sur sa route","d":719808,"day":"2026-09-07"},
+      {"id":"706846","t":"Avoir une foi catholique solide (5/5) Faut-il redécouvrir l'idée du salut et de la grâce ?","d":817848,"day":"2026-09-04"},
+      {"id":"707296","t":"Avoir une foi catholique solide (4/5) L'Église attend-elle que l'on donne sa vie ?","d":828192,"day":"2026-09-03"},
+      {"id":"706198","t":"Avoir une foi catholique solide (3/5) Des croyants influencés par leur époque ?","d":817248,"day":"2026-09-02"}]},
+    {"t":"B. A. -BA du christianisme","cat":"vie-spirituelle","national":true,"img":"i2|2023-08/B.a.%20b-a%20du%20christianisme%20%281%29.png.webp","pres":"Pauline de Torsiac","eps":[
+      {"id":"706185","t":"Léon XIV en France : Que représente le pape pour les catholiques ?","d":784320,"day":"2026-09-15"},
+      {"id":"706177","t":"La grande histoire entre les Papes et la France","d":764856,"day":"2026-09-08"},
+      {"id":"706169","t":"Le calendrier et les codes couleurs de la liturgie dans l'Eglise","d":766944,"day":"2026-09-05"}]},
+    {"t":"Ce jour dans l'Histoire","cat":"culture","national":true,"img":"i2|2023-08/Ce%20jour%20dans%20l%27Histoire%20%282%29.png.webp","pres":"Bruno Fumat","eps":[
+      {"id":"146729","t":"13 septembre 1515 c'est la bataille de Marignan","d":215904,"day":"2026-09-13"},
+      {"id":"275600","t":"12 septembre 1943 : Hitler fait libérer Mussolini","d":216000,"day":"2026-09-12"},
+      {"id":"144544","t":"11 septembre 2001 Attentats aux Etats-Unis","d":187824,"day":"2026-09-11"},
+      {"id":"144532","t":"8 septembre 1941 Début du siège de Leningrad","d":195432,"day":"2026-09-08"},
+      {"id":"144530","t":"7 septembre 1940 Début du Blitz au dessus de l'Angleterre","d":184440,"day":"2026-09-07"},
+      {"id":"144362","t":"6 septembre 1991 ça bouge en Union Soviétique","d":204168,"day":"2026-09-06"},
+      {"id":"704742","t":"5 septembre 1972 : Prise d'otages aux JO de Munich","d":229272,"day":"2026-09-05"},
+      {"id":"143829","t":"4 septembre 1870 : Proclamation de la République en France","d":186696,"day":"2026-09-04"},
+      {"id":"143819","t":"3 septembre 1939 : la France et l'Angleterre déclarent la guerre à l'Allemagne","d":179808,"day":"2026-09-03"},
+      {"id":"143246","t":"2 septembre 1945 c'est la fin de la Seconde guerre mondiale","d":207936,"day":"2026-09-02"}]},
+    {"t":"Talent belge","cat":"culture","national":false,"img":"x|https://assets.radiorcf.com/styles/304x171/assets/2024-08/talent-belge-rcf-liege.png.webp","pres":"Patrick Ermano","eps":[
+      {"id":"710984","t":"Daniel Rampello - Ressuscité","d":1812864,"day":"2026-09-14"},
+      {"id":"710501","t":"Romain Helvétius - Univers","d":1939920,"day":"2026-09-10"},
+      {"id":"709230","t":"Ninha","d":1786056,"day":"2026-09-08"},
+      {"id":"708018","t":"Deux talents belges à l’honneur dans ce numéro !","d":1782984,"day":"2026-09-03"}]},
+    {"t":"La chanson dans l'âme","cat":"culture","national":false,"img":"x|https://assets.radiorcf.com/styles/304x171/assets/2024-04/chanson-dans-ame-rcf.png.webp","pres":"Bernard Gabriel","eps":[
+      {"id":"707220","t":"Actualités musicales","d":1806840,"day":"2026-09-11"},
+      {"id":"707215","t":"De vives émotions (10)","d":1747656,"day":"2026-09-09"},
+      {"id":"705918","t":"Actualités musicales","d":1835016,"day":"2026-09-04"},
+      {"id":"705647","t":"De vives émotions (9)","d":1629744,"day":"2026-09-02"}]},
+    {"t":"Entrée des artistes","cat":"culture","national":false,"img":"i2|2023-09/entree-des-artistes-rcf-liege-2023.png.webp","pres":"Christiane de Moffarts","eps":[
+      {"id":"710987","t":"Bernard Pierreuse présente le festival La flandre s'invite à Liège","d":1800816,"day":"2026-09-14"},
+      {"id":"709705","t":"Espace 251 Nord","d":1780560,"day":"2026-09-07"},
+      {"id":"706258","t":"Parcours d'artistes Saint-Laurent avec Elisabeth Noël et Tompi dsgn","d":1785120,"day":"2026-09-05"}]},
+    {"t":"L'édito","cat":"actualite","national":false,"img":"i2|2021-06/edito.jpg.webp","pres":"","eps":[
+      {"id":"710509","t":"Véronique de Stexhe : du chaos naît parfois la grâce","d":215544,"day":"2026-09-14"},
+      {"id":"710195","t":"Eric de Beukelaer : Une prière pour les parlementaires belges qui crée le débat","d":194760,"day":"2026-09-10"},
+      {"id":"709714","t":"Pierre-Paul Delvaux : Peut-on se passer d'un horizon d'attente ?","d":254712,"day":"2026-09-09"},
+      {"id":"707633","t":"Un Monde après les feux","d":214728,"day":"2026-09-02"}]},
+    {"t":"Direction Sud","cat":"economie-et-societe","national":false,"img":"i2|2023-09/direction-sud-rcf-liege.png.webp","pres":"Patrick Ermano","eps":[
+      {"id":"711035","t":"Africa vibes avec Nyhla","d":3636072,"day":"2026-09-14"},
+      {"id":"709238","t":"Africa vibes 1","d":3657048,"day":"2026-09-07"},
+      {"id":"707179","t":"4ème édition du Black History Month de Luxembourg","d":3645336,"day":"2026-09-05"}]}
+  ]
+}
