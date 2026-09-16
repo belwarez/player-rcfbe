@@ -490,39 +490,59 @@ function fmtDay(d){
 function el(id){ return document.getElementById(id); }
 
 /* ─── grille ──────────────────────────────────────────── */
-var rows = D.grid.map(function(a){ var o={}; K.forEach(function(k,i){o[k]=a[i]});
-  o.show=(o.show||'').trim(); o.ep=(o.ep||'').trim(); return o; });
-var abs=0, prev=-1;
-rows.forEach(function(r){
-  var m=toMin(r.t); if(m<prev) abs+=1440; prev=m; r.abs=abs+m;
-  r.state = r.type==='live' ? 'direct' : (r.audio ? 'ecoutable' : 'sans');
-});
-/* Où en est-on dans la grille ?
-   Les rangs portent un temps cumulé : la grille commence à l'heure de sa
-   première case et franchit minuit en ajoutant 1440. L'horloge, elle, repart de
-   zéro à minuit. Comparer les deux directement fait donc retomber sur la
-   première case dès qu'on écoute après minuit — il faut rattraper le tour. */
-var d = new Date();
-var nowAbs = d.getHours()*60 + d.getMinutes();
-var debut = rows.length ? rows[0].abs : 0;
-while(nowAbs < debut && nowAbs + 1440 <= (rows.length ? rows[rows.length-1].abs : 0) + 1440){
-  nowAbs += 1440; break;
+// Deux sources, même forme d'objet en sortie : {t,show,ep,audio,dur,img,type,pres,id}.
+// zipStatique lit le tableau compact injecté au build (fenêtre de secours,
+// affichée le temps que le direct réponde). mapApi lit la réponse réelle de
+// rcf.be/wp-json/rcf/v1/programs (forme observée le 16/09/2026, fiche 23/25).
+function zipStatique(a){ var o={}; K.forEach(function(k,i){o[k]=a[i]});
+  o.show=(o.show||'').trim(); o.ep=(o.ep||'').trim(); return o; }
+function mapApi(it){
+  return {
+    t:    it.start_time || '',
+    show: (it.show_title || '').trim(),
+    ep:   (it.episode_title || '').trim(),
+    audio: it.episode_audio || '',
+    dur:  Number(it.duration) || 0,
+    img:  it.img_episode || it.img_show || '',
+    type: it.type || '',
+    pres: it.presenter || '',
+    id:   it.episode_id || ''
+  };
 }
-var curIdx = 0;
-for(var i=0;i<rows.length;i++){ if(rows[i].abs<=nowAbs) curIdx=i; }
+// jours : [{offset:-1..2, objs:[...]}], un jour = un décalage entier de 1440 min
+// par rapport à aujourd'hui. Remplace le rattrapage « +1440 si l'heure recule »
+// qui ne savait gérer qu'une seule journée : ici chaque case porte déjà son jour.
+function construireRows(jours){
+  var rows = [];
+  jours.forEach(function(j){
+    j.objs.forEach(function(o){
+      var r = {}; for(var k in o) r[k]=o[k];
+      r.abs = j.offset*1440 + toMin(r.t);
+      r.jourOffset = j.offset;
+      r.state = r.type==='live' ? 'direct' : (r.audio ? 'ecoutable' : 'sans');
+      rows.push(r);
+    });
+  });
+  var d = new Date();
+  var nowAbs = d.getHours()*60 + d.getMinutes();
+  var curIdx = 0;
+  for(var i=0;i<rows.length;i++){ if(rows[i].abs<=nowAbs) curIdx=i; }
 
-/* Le programme ne montre pas la journée entière mais une fenêtre autour de
-   l'émission en cours : quelques cases derrière pour le rattrapage, davantage
-   devant pour ce qui arrive. La fenêtre garde une taille constante et se cale
-   contre les extrémités — à 23 h 30 on ne se retrouve donc pas avec une seule
-   case à l'écran, mais avec la fin de soirée entière.
-   Limite connue : la grille est celle d'une journée. Tant qu'on ne dispose pas
-   de celle du lendemain, la fenêtre s'arrête au dernier rendez-vous du jour. */
-var AVANT = 4, APRES = 13, LARGEUR = AVANT + 1 + APRES;
-var debutFen = Math.max(0, Math.min(curIdx - AVANT, rows.length - LARGEUR));
-var finFen   = Math.min(rows.length, debutFen + LARGEUR);
-rows = rows.slice(debutFen, finFen);
-curIdx -= debutFen;
+  /* Le programme ne montre pas une seule journée mais une fenêtre glissante
+     autour de l'émission en cours : un jour avant, deux jours après. Quelques
+     cases derrière pour le rattrapage, davantage devant pour ce qui arrive. La
+     fenêtre garde une taille constante et se cale contre les extrémités — à
+     23 h 30 on ne se retrouve donc pas avec une seule case à l'écran. */
+  var AVANT = 4, APRES = 13, LARGEUR = AVANT + 1 + APRES;
+  var debutFen = Math.max(0, Math.min(curIdx - AVANT, rows.length - LARGEUR));
+  var finFen   = Math.min(rows.length, debutFen + LARGEUR);
+  return { rows: rows.slice(debutFen, finFen), curIdx: curIdx - debutFen };
+}
+// Premier affichage instantané à partir de la donnée figée au build (un seul
+// jour) : rien à attendre pour peindre l'écran. chargerProgramme() la remplace
+// dès que le direct a répondu, plus bas.
+var initial = construireRows([{ offset: 0, objs: D.grid.map(zipStatique) }]);
+var rows = initial.rows, curIdx = initial.curIdx;
 
 /* ─── tri des podcasts ────────────────────────────────── */
 // Du plus récent au plus ancien : la date de diffusion d'abord ; à date égale,
@@ -776,6 +796,43 @@ requestAnimationFrame(function(){
 });
 
 send('__IframeReady', {station:D.station.code, rpId:RPID});
+
+/* ─── programme en direct ────────────────────────────── */
+// CORS ouvert, vérifié le 16/09/2026 (fiche 23 §1) : rcf.be/wp-json/rcf/v1/programs
+// accepte les appels du navigateur, sans serveur intermédiaire. On interroge
+// hier, aujourd'hui et les deux jours suivants pour nourrir la fenêtre glissante.
+// nowplaying (même route CORS-ouverte) a été vérifié dans la même session mais
+// n'est pas branché ici : son couple title/artist ferait doublon avec le hSub
+// déjà calculé depuis la grille (r.ep/r.pres) et risquerait de le contredire.
+// À reconsidérer si la grille s'avère parfois en retard sur un changement de
+// dernière minute.
+function dateISO(offset){
+  var d = new Date(); d.setDate(d.getDate() + offset);
+  var p = function(n){ return (n<10?'0':'')+n; };
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+}
+function chargerProgramme(){
+  var offsets = [-1, 0, 1, 2];
+  return Promise.all(offsets.map(function(off){
+    var url = 'https://rcf.be/wp-json/rcf/v1/programs?station='+encodeURIComponent(D.station.code)+'&date='+dateISO(off);
+    return fetch(url)
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){ return { offset: off, objs: (j && j.items ? j.items : []).map(mapApi) }; })
+      .catch(function(){ return { offset: off, objs: [] }; });
+  })).then(function(jours){
+    jours = jours.filter(function(j){ return j.objs.length; });
+    if(!jours.length) return; // API injoignable : on garde la grille figée du build
+    var res = construireRows(jours);
+    rows = res.rows; curIdx = res.curIdx;
+    paintHead(); paintRail();
+    requestAnimationFrame(function(){
+      var c = el('rail'), it = el('c'+curIdx);
+      if(it) c.scrollLeft = it.offsetLeft - c.clientWidth/2 + it.clientWidth/2;
+    });
+  });
+}
+chargerProgramme();
+setInterval(chargerProgramme, 60000);
 })();
 </script>
 </body>
